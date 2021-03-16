@@ -9,7 +9,7 @@
 @{
 
     # Script module or binary module file associated with this manifest.
-    RootModule        = '.\code365scripts\code365scripts.psm1'
+    RootModule        = '.\code365scripts.psm1'
 
     # Version number of this module.
     ModuleVersion     = '0.0.2'
@@ -51,7 +51,7 @@
     # ProcessorArchitecture = ''
 
     # Modules that must be imported into the global environment prior to importing this module
-    RequiredModules   = @('.\code365scripts\code365scripts.psm1')
+    # RequiredModules   = @()
 
     # Assemblies that must be loaded prior to importing this module
     # RequiredAssemblies = @()
