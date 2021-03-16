@@ -23,8 +23,16 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            code365scripts:
+              - 'code365scripts/**'
+
+        # run only if some file in 'src' folder was changed
       - name: Publish Module to PowerShell Gallery
+        if: steps.changes.outputs.code365scripts == 'true'
         uses: pcgeek86/publish-powershell-module-action@v19
         id: publish-module
         with:
