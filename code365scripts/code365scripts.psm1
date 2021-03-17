@@ -5,6 +5,8 @@
     目前 Windows 默认安装的 PowerShell 版本是 5.1，这个版本是只能在 Windows 上面运行的。后来，微软开发了一个可以跨平台的 PowerShell 版本，从 6.0 开始编号。这个版本可以在 Windows， Mac， Liunx 等多个平台运行，并且这个版本经常更新，目前的版本号是 7.1.3。
     更新 PowerShell 版本本身并不难，你在打开 PowerShell 窗口时就会有提示，然后通过一个网址，你可以下载，然后安装。
     但是如果你觉得这个过程还是比较繁琐的话，你可以简单地通过 `Update-Powershell` 这个命令来完成，甚至可以用 `up` 这个快捷指令即可。
+.LINK
+    https://github.com/code365opensource/code365scripts/tree/master/code365scripts
 #>
 function Update-Powershell {
     [Alias("up")]
@@ -36,6 +38,8 @@ function Update-Powershell {
 .EXAMPLE
     PS C:\> im -apps dev -useDefault
     这是安装服务器端定义好的dev这个场景的应用集合。还支持其他更多自定义集合。
+.LINK
+    https://github.com/code365opensource/code365scripts/tree/master/code365scripts
 #>
 function Install-Machine {
     [Alias("im")]
