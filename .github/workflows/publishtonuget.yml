@@ -17,7 +17,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  publishmodule:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -41,7 +41,7 @@ jobs:
       - name: Publish Module to PowerShell Gallery (code365scripts)
         if: steps.changes.outputs.code365scripts == 'true'
         uses: pcgeek86/publish-powershell-module-action@v19
-        id: publish-module
+        id: publish-core
         with:
           modulePath: code365scripts
           NuGetApiKey: ${{ secrets.NUGETKEY }}
@@ -49,7 +49,7 @@ jobs:
       - name: Publish Module to PowerShell Gallery (teams)
         if: steps.changes.outputs.teams == 'true'
         uses: pcgeek86/publish-powershell-module-action@v19
-        id: publish-module
+        id: publish-teams
         with:
           modulePath: code365scripts.teams
           NuGetApiKey: ${{ secrets.NUGETKEY }}
@@ -58,7 +58,7 @@ jobs:
       - name: Publish Module to PowerShell Gallery (weixin)
         if: steps.changes.outputs.weixin == 'true'
         uses: pcgeek86/publish-powershell-module-action@v19
-        id: publish-module
+        id: publish-weixin
         with:
           modulePath: code365scripts.weixin
           NuGetApiKey: ${{ secrets.NUGETKEY }}
