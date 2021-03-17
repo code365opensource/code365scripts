@@ -21,7 +21,7 @@ PowerShell 目前也支持跨平台（Windows，Mac，Liunx）使用，只要你
 ## Teams 模块 [![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/code365scripts.teams?label=code365scripts.teams)](https://www.powershellgallery.com/packages/code365scripts.teams) [![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/code365scripts.teams)](https://www.powershellgallery.com/packages/code365scripts.teams)
 
 1. 安装 `Install-Module code365scripts.teams`
-1. 详情 [code365scripts.teams](code365scripts.teams\readme.md)
+1. 详情 [code365scripts.teams](./code365scripts.teams/readme.md)
 
 ## 微信模块 [![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/code365scripts.weixin?label=code365scripts.weixin)](https://www.powershellgallery.com/packages/code365scripts.weixin) [![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/code365scripts.weixin)](https://www.powershellgallery.com/packages/code365scripts.weixin)
 
