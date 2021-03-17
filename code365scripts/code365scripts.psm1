@@ -10,5 +10,5 @@ function Update-Powershell {
     param ()
 
 
-    Invoke-Expression "& {$(Invoke-Restmethod https://aka.ms/Install-PowerShell.ps1)} -UseMSI"
+    Invoke-Expression "& {$(Invoke-Restmethod https://aka.ms/Install-PowerShell.ps1)}  -Quiet -AddExplorerContextMenu"
 }
