@@ -31,3 +31,7 @@
    是不是很容易呢？你甚至可以用 `im -apps vscode,7zip,git`这样的快捷方式。
 
    为了帮助大家更好地重用，这个工具支持加载预定义的一些应用集合，例如我定义了一个给开发人员用的集合，叫 `dev`，这里面包含了我自己常用的一些软件。如果你想直接使用，那么就可以输入 `im -apps dev -useDefault` 即可。
+
+   这些应用集合，是定义在 <https://github.com/code365opensource/code365scripts/blob/master/code365scripts/config.json>  这个文件的，你可以随时参考，如果你想贡献内容，例如你有一个针对特定人群的应用集合，你可以 `Fork` 这个项目，然后修改这个文件，并且给我提交 `Pull request`，我会视情况合并进去。
+
+
