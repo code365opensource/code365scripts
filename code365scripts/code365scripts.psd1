@@ -12,10 +12,10 @@
     RootModule           = '.\code365scripts.psm1'
 
     # Version number of this module.
-    ModuleVersion        = '0.0.6'
+    ModuleVersion        = '0.0.5'
 
     # Supported PSEditions
-    CompatiblePSEditions = @("Desktop", "Core")
+    #CompatiblePSEditions = @("Desktop", "Core")
 
     # ID used to uniquely identify this module
     GUID                 = 'fd37b886-62db-427b-ac77-7d4f7cae3c81'
