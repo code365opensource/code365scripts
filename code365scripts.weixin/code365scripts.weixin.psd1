@@ -12,7 +12,7 @@
     RootModule        = '.\code365scripts.weixin.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.0.1'
+    ModuleVersion     = '0.0.2'
 
     # Supported PSEditions
     #CompatiblePSEditions = @("Desktop", "Core")
@@ -69,16 +69,16 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = @("Update-Powershell")
+    FunctionsToExport = @("Save-WeixinNews")
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-    CmdletsToExport   = @("Update-Powershell")
+    CmdletsToExport   = @("Save-WeixinNews")
 
     # Variables to export from this module
     VariablesToExport = '*'
 
     # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-    AliasesToExport   = @("up")
+    AliasesToExport   = @()
 
     # DSC resources to export from this module
     # DscResourcesToExport = @()
@@ -95,7 +95,7 @@
         PSData = @{
 
             # Tags applied to this module. These help with module discovery in online galleries.
-            Tags       = @("code365", "community", "china", "chenxizhang")
+            Tags       = @("code365", "community", "china", "chenxizhang","weixin")
 
             # A URL to the license for this module.
             LicenseUri = 'https://github.com/code365opensource/code365scripts'

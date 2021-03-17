@@ -1,3 +1,17 @@
+<#
+.SYNOPSIS
+    批量下载Teams视频会议的背景图
+.DESCRIPTION
+    下载 https://adoption.microsoft.com/microsoft-teams/custom-backgrounds-gallery/ 这里列出的美图，保存到Teams指定的目录，并且进行压缩，生成缩略图。你只需要运行这个脚本，然后再去打开Teams的视频会议，选择背景图时就可以看到这些新的图片。
+.EXAMPLE
+    PS C:\> Get-TeamsVideoMeetingBackgrounds
+    下载所有推荐的美图到Teams指定目录
+.EXAMPLE
+    PS C:\> gtvb
+    下载所有推荐的美图到Teams指定目录
+.LINK
+    https://github.com/code365opensource/code365scripts/tree/master/code365scripts.teams
+#>
 function Get-TeamsVideoMeetingBackgrounds {
     [CmdletBinding()]
     [Alias("gtvb")]
