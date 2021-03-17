@@ -9,16 +9,16 @@
 @{
 
     # Script module or binary module file associated with this manifest.
-    RootModule        = '.\code365scripts.psm1'
+    RootModule        = '.\code365scripts.weixin.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.0.6'
+    ModuleVersion     = '0.0.1'
 
     # Supported PSEditions
     #CompatiblePSEditions = @("Desktop", "Core")
 
     # ID used to uniquely identify this module
-    GUID              = 'fd37b886-62db-427b-ac77-7d4f7cae3c81'
+    GUID              = '93d0087c-6b3e-4533-8605-8c77a4e601d9'
 
     # Author of this module
     Author            = '陈希章（code365)'
@@ -69,16 +69,16 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = @("Update-Powershell", "Install-Machine")
+    FunctionsToExport = @("Update-Powershell")
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-    CmdletsToExport   = @("Update-Powershell", "Install-Machine")
+    CmdletsToExport   = @("Update-Powershell")
 
     # Variables to export from this module
     VariablesToExport = '*'
 
     # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-    AliasesToExport   = @("up", "im")
+    AliasesToExport   = @("up")
 
     # DSC resources to export from this module
     # DscResourcesToExport = @()
