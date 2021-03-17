@@ -16,7 +16,7 @@ PowerShell 目前也支持跨平台（Windows，Mac，Liunx）使用，只要你
 ## 核心模块 [![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/code365scripts?label=code365scripts)](https://www.powershellgallery.com/packages/code365scripts) [![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/code365scripts)](https://www.powershellgallery.com/packages/code365scripts)
 
 1. 安装 `Install-Module code365scripts`
-1. 详情 [code365scripts](code365scripts\readme.md)
+1. 详情 [code365scripts](./code365scripts/readme.md)
 
 ## Teams 模块 [![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/code365scripts.teams?label=code365scripts.teams)](https://www.powershellgallery.com/packages/code365scripts.teams) [![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/code365scripts.teams)](https://www.powershellgallery.com/packages/code365scripts.teams)
 
@@ -26,4 +26,4 @@ PowerShell 目前也支持跨平台（Windows，Mac，Liunx）使用，只要你
 ## 微信模块 [![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/code365scripts.weixin?label=code365scripts.weixin)](https://www.powershellgallery.com/packages/code365scripts.weixin) [![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/code365scripts.weixin)](https://www.powershellgallery.com/packages/code365scripts.weixin)
 
 1. 安装 `Install-Module code365scripts.weixin`
-1. 详情 [code365scripts.weixin](code365scripts.weixin\readmd.md)
+1. 详情 [code365scripts.weixin](./code365scripts.weixin/readmd.md)
