@@ -38,7 +38,7 @@ jobs:
               - 'code365scripts.weixin/*.psd1'
 
         # run only if some file in 'src' folder was changed
-      - name: Publish Module to PowerShell Gallery (code365scripts)
+      - name: Publish Module to PowerShell Gallery (core)
         if: steps.changes.outputs.core == 'true'
         uses: pcgeek86/publish-powershell-module-action@v19
         id: publish-core
