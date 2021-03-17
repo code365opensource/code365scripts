@@ -22,7 +22,8 @@ function Update-Powershell {
 function Install-Machine {
     [Alias("im")]
     param(
-        [string]$apps = @("vscode", "anaconda3", "git", "nodejs-lts", "winhotkey", "postman") 
+        [string[]]$apps,
+        [switch]$useDefault
     )
 
     $confirm = Read-Host -Prompt "这个命令涉及到安装软件，所以你需要在管理员模式下打开Powershell，请问是否继续？【y/N】"
@@ -31,6 +32,11 @@ function Install-Machine {
         return
     }
 
+
+    if ($useDefault) {
+        $config = Invoke-Restmethod https://raw.githubusercontent.com/code365opensource/code365scripts/master/code365scripts/config.json
+        $apps = $config.defaultapps."$apps"
+    }
 
     if (!(Test-Path "$env:programdata\chocoportable\bin\choco.exe")) {
         Invoke-Expression "& {$(Invoke-Restmethod https://chocolatey.org/install.ps1)}"

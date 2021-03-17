@@ -1,10 +1,14 @@
 {
   "defaultapps": [
-    "vscode",
-    "anaconda3",
-    "git",
-    "nodejs-lts",
-    "winhotkey",
-    "postman"
+    {
+      "dev": [
+        "vscode",
+        "anaconda3",
+        "git",
+        "nodejs-lts",
+        "winhotkey",
+        "postman"
+      ]
+    }
   ]
 }
