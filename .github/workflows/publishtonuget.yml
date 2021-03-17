@@ -30,16 +30,16 @@ jobs:
         id: changes
         with:
           filters: |
-            code365scripts:
-              - 'code365scripts/**'
+            core:
+              - 'code365scripts/*.psd1'
             teams:
-              - 'code365scripts.teams/**'
+              - 'code365scripts.teams/*.psd1'
             weixin:
-              - 'code365scripts.weixin/**'
+              - 'code365scripts.weixin/*.psd1'
 
         # run only if some file in 'src' folder was changed
       - name: Publish Module to PowerShell Gallery (code365scripts)
-        if: steps.changes.outputs.code365scripts == 'true'
+        if: steps.changes.outputs.core == 'true'
         uses: pcgeek86/publish-powershell-module-action@v19
         id: publish-core
         with:
