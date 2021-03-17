@@ -9,6 +9,7 @@ function Update-Powershell {
     [CmdletBinding()]
     param ()
 
-
-    Invoke-Expression "& {$(Invoke-Restmethod https://aka.ms/Install-PowerShell.ps1)}  -Quiet -AddExplorerContextMenu"
+    process {
+        Invoke-Expression "& {$(Invoke-Restmethod https://aka.ms/Install-PowerShell.ps1)}  -Quiet -AddExplorerContextMenu"
+    }
 }
