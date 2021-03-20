@@ -1,6 +1,6 @@
 # 开源脚本库
 
-> 陈希章@2021 <https://code365.xyz/code365scripts>
+> 陈希章@2021 <https://scripts.code365.xyz>
 
 ## 项目介绍
 
