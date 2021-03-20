@@ -1,3 +1,37 @@
+function GenerateThumbnail {
+    param (
+        [string]$filePath
+    )
+    $fileName = Split-Path $filePath -Leaf
+    $thumbName = "$($fileName.Split('.')[0])_thumb.jpg"
+    
+    $full = [System.Drawing.Image]::FromFile($filePath);
+    $thumb = $full.GetThumbnailImage(280, 158, $null, [System.IntPtr]::Zero);
+
+    $encoder = GetEncoder
+
+    $myEncoder = [Drawing.Imaging.Encoder]::Quality
+    $myEncoderParameters = New-Object Drawing.Imaging.EncoderParameters(1)
+    $myEncoderParameter = New-Object Drawing.Imaging.EncoderParameter($myEncoder, 24L)
+    $myEncoderParameters.Param[0] = $myEncoderParameter
+
+    $thumb.Save($filePath.replace($fileName, $thumbName), $encoder, $myEncoderParameters);
+    $full.Dispose();
+    $thumb.Dispose();
+}
+
+function GetEncoder() {
+    $format = [Drawing.Imaging.ImageFormat]::Jpeg
+
+    $codecs = [System.Drawing.Imaging.ImageCodecInfo]::GetImageDecoders()
+    foreach ($codec in $codecs) {
+        if ($codec.FormatID -eq $format.Guid) {
+            return $codec;
+        }
+    }
+    return $null;
+}
+
 <#
 .SYNOPSIS
     批量下载Teams视频会议的背景图
@@ -21,43 +55,6 @@ function Get-TeamsVideoMeetingBackgrounds {
         # 老版本Powershell需要手工导入这个图像库
         Add-Type -AssemblyName System.Drawing
     }
-    function GetEncoder() {
-        $format = [Drawing.Imaging.ImageFormat]::Jpeg
-
-        $codecs = [System.Drawing.Imaging.ImageCodecInfo]::GetImageDecoders()
-        foreach ($codec in $codecs) {
-            if ($codec.FormatID -eq $format.Guid) {
-                return $codec;
-            }
-        }
-        return $null;
-    }
-
-
-    function GenerateThumbnail {
-        param (
-            [string]$filePath
-        )
-        $fileName = Split-Path $filePath -Leaf
-        $thumbName = "$($fileName.Split('.')[0])_thumb.jpg"
-    
-        $full = [System.Drawing.Image]::FromFile($filePath);
-        $thumb = $full.GetThumbnailImage(280, 158, $null, [System.IntPtr]::Zero);
-
-        $encoder = GetEncoder
-
-        $myEncoder = [Drawing.Imaging.Encoder]::Quality
-        $myEncoderParameters = New-Object Drawing.Imaging.EncoderParameters(1)
-        $myEncoderParameter = New-Object Drawing.Imaging.EncoderParameter($myEncoder, 24L)
-        $myEncoderParameters.Param[0] = $myEncoderParameter
-
-        $thumb.Save($filePath.replace($fileName, $thumbName), $encoder, $myEncoderParameters);
-        $full.Dispose();
-        $thumb.Dispose();
-    }
-
-
-
 
     $path = "$home\AppData\Roaming\Microsoft\Teams\Backgrounds\uploads"
 
