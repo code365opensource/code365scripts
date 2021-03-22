@@ -95,10 +95,9 @@ function Remove-TeamsClientCache {
     [CmdletBinding(DefaultParameterSetName = 'default',
         SupportsShouldProcess = $true,
         PositionalBinding = $false,
-        HelpUri = 'http://www.microsoft.com/',
+        HelpUri = 'https://scripts.code365.xyz/code365scripts.teams/',
         ConfirmImpact = 'Medium')]
     [Alias()]
-    [OutputType([String])]
     Param ()
     
     begin {
@@ -107,11 +106,13 @@ function Remove-TeamsClientCache {
         if ($res.ToLower() -ne "y") {
             return
         }
+
+        $errorpreference = $ErrorActionPreference
+        $ErrorActionPreference = "SilentlyContinue"
     }
     
     process {
-        $errorpreference = $ErrorActionPreference
-        $ErrorActionPreference = "SilentlyContinue"
+
         Get-Process | Where-Object { $_.ProcessName -eq "Teams" } | Stop-Process
         Remove-Item –path $env:APPDATA"\Microsoft\teams\cache\*" | Out-Null
         Remove-Item –path $env:APPDATA"\Microsoft\teams\blob_storage\*" | Out-Null
@@ -123,9 +124,12 @@ function Remove-TeamsClientCache {
         Remove-Item –path $env:APPDATA"\Microsoft\teams\Code Cache\*" -Recurse | Out-Null
         Remove-Item –path $env:APPDATA"\Microsoft\teams\backgrounds\*" -Recurse | Out-Null
         Write-Host "客户端缓存已经清理，请重新启动Teams客户端"
-        $ErrorActionPreference = $errorpreference
     }
     
     end {
+        
+        $ErrorActionPreference = $errorpreference
     }
 }
+
+
