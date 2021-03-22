@@ -12,7 +12,7 @@
     RootModule        = '.\code365scripts.teams.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.0.6.3'
+    ModuleVersion     = '0.0.7'
 
     # Supported PSEditions
     # CompatiblePSEditions = @("Desktop", "Core")

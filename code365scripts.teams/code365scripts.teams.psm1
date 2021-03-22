@@ -164,13 +164,16 @@ function Remove-TeamsClientCache {
 .SYNOPSIS
     批量添加用户到某个团队
 .DESCRIPTION
-    
+    通过指定用户名或者从CSV中批量导入用户到某个团队。该命令仅支持添加本公司员工。
 .EXAMPLE
     PS C:\> Import-TeamUser -teamName "开发测试" -users mike@xyz.com,tom@xyz.com
     用逗号分开不同的用户名
 .EXAMPLE
     PS C:\> Import-TeamUser -teamName "开发测试" -users mike,tom
     用逗号分开不同的用户名，如果不带邮箱后缀，则自动以当前用户的邮箱后缀补充
+.EXAMPLE
+    PS C:\> Import-TeamUser -teamName "开发测试" -users (Import-Csv data.csv).email
+    从CSV中导入用户，以上命令假设用户信息文件名为 data.csv, 并且在email这个列中保存了用户的邮箱地址（可以带公司的后缀，也可以不带）
 #>
 function Import-TeamUser {
     [CmdletBinding(DefaultParameterSetName = "default")]
