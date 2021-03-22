@@ -32,7 +32,7 @@ function GetEncoder() {
     return $null;
 }
 
-function Ensure-RequiredModules {
+function EnsureRequiredModules {
     [CmdletBinding()]
     param (
         [string[]]$requiredModules
@@ -182,7 +182,7 @@ function Import-TeamUser {
     )
     
     begin {
-        Ensure-RequiredModules -requiredModules @("MicrosoftTeams")
+        EnsureRequiredModules -requiredModules @("MicrosoftTeams")
     }
     
     process {
@@ -192,7 +192,7 @@ function Import-TeamUser {
         }
 
         $team = Get-Team -DisplayName $teamName
-        if ($null -eq $tem) {
+        if ($null -eq $team) {
             Write-Host "无法查找到该团队，请检查名称"
             return
         }
