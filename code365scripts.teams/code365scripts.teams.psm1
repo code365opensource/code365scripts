@@ -32,6 +32,34 @@ function GetEncoder() {
     return $null;
 }
 
+function Ensure-RequiredModules {
+    [CmdletBinding()]
+    param (
+        [string[]]$requiredModules
+    )
+
+    $foundModules = Get-Module $requiredModules -ListAvailable
+    if ($null -eq $foundModules) {
+        $foundModules = @()
+    }
+    else {
+        $foundModules = $foundModules.Name
+    }
+
+    if ($foundModules.Count -lt $requiredModules.Count) {
+
+        $needToInstallModules = $requiredModules | Where-Object { $_ -notin $foundModules }
+
+        $p = Read-Host -Prompt "该命令依赖 $([string]::Join(',',$needToInstallModules)) 模块，当前没有检测到，是否要立即安装?【Y/n】"
+        if ($p.Length -eq 0 -xor $p.ToLower() -eq "y") {
+            Install-Module $needToInstallModules -Scope CurrentUser
+        }
+        else {
+            return
+        }
+    }
+}
+
 <#
 .SYNOPSIS
     批量下载Teams视频会议的背景图
@@ -132,4 +160,71 @@ function Remove-TeamsClientCache {
     }
 }
 
+<#
+.SYNOPSIS
+    批量添加用户到某个团队
+.DESCRIPTION
+    
+.EXAMPLE
+    PS C:\> Import-TeamUser -teamName "开发测试" -users mike@xyz.com,tom@xyz.com
+    用逗号分开不同的用户名
+.EXAMPLE
+    PS C:\> Import-TeamUser -teamName "开发测试" -users mike,tom
+    用逗号分开不同的用户名，如果不带邮箱后缀，则自动以当前用户的邮箱后缀补充
+#>
+function Import-TeamUser {
+    [CmdletBinding(DefaultParameterSetName = "default")]
+    param (
+        [Parameter(ParameterSetName = "default", Mandatory = $true)]
+        [string]$teamName,
+        [Parameter(ParameterSetName = "default", Mandatory = $true)]
+        [string[]]$users
+    )
+    
+    begin {
+        Ensure-RequiredModules -requiredModules @("MicrosoftTeams")
+    }
+    
+    process {
+        $connect = Connect-MicrosoftTeams
+        if ($null -ne $connect) {
+            $domain = $connect.Account.Id.split('@')[1]
+        }
 
+        $team = Get-Team -DisplayName $teamName
+        if ($null -eq $tem) {
+            Write-Host "无法查找到该团队，请检查名称"
+            return
+        }
+
+        # 处理用户列表
+
+
+        $index = 1
+        $count = $users.Count
+        
+        foreach ($item in $users) {
+
+
+            if (!($item.EndsWith("@$domain"))) {
+                $item += "@$domain"
+            }
+
+            if ($item.Contains("@") -band !($item.EndsWith("@$domain"))) {
+                Write-Progress -Activity "批量导入用户" -Status "$item 不是当前公司用户，取消操作" -PercentComplete ($index++ / $count * 100)
+                Write-Host "$item 不是当前公司用户，取消操作"
+            }
+            else {
+                Add-TeamUser -GroupId $team.GroupId -User $item
+                Write-Progress -Activity "批量导入用户" -Status $item -PercentComplete ($index++ / $count * 100)
+                Write-Host "$item 导入成功"
+
+            }
+
+        }
+    }
+    
+    end {
+        
+    }
+}

@@ -12,7 +12,7 @@
     RootModule        = '.\code365scripts.teams.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.0.5.1'
+    ModuleVersion     = '0.0.6.1'
 
     # Supported PSEditions
     # CompatiblePSEditions = @("Desktop", "Core")
@@ -57,7 +57,7 @@
     # RequiredAssemblies = @()
 
     # Script files (.ps1) that are run in the caller's environment prior to importing this module.
-    ScriptsToProcess  = @("installdependency.ps1")
+    # ScriptsToProcess  = @("installdependency.ps1")
 
     # Type files (.ps1xml) to be loaded when importing this module
     # TypesToProcess = @()
@@ -69,10 +69,10 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = @("Get-TeamsVideoMeetingBackgrounds", "Remove-TeamsClientCache")
+    FunctionsToExport = @()
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-    CmdletsToExport   = @("Get-TeamsVideoMeetingBackgrounds", "Remove-TeamsClientCache")
+    CmdletsToExport   = @("Get-TeamsVideoMeetingBackgrounds", "Remove-TeamsClientCache", "Import-TeamUser")
 
     # Variables to export from this module
     VariablesToExport = '*'
@@ -95,13 +95,13 @@
         PSData = @{
 
             # Tags applied to this module. These help with module discovery in online galleries.
-            Tags                       = @("code365", "community", "china", "chenxizhang", "teams")
+            Tags       = @("code365", "community", "china", "chenxizhang", "teams")
 
             # A URL to the license for this module.
-            LicenseUri                 = 'https://github.com/code365opensource/code365scripts'
+            LicenseUri = 'https://github.com/code365opensource/code365scripts'
 
             # A URL to the main website for this project.
-            ProjectUri                 = 'https://github.com/code365opensource/code365scripts'
+            ProjectUri = 'https://github.com/code365opensource/code365scripts'
 
             # A URL to an icon representing this module.
             # IconUri = ''
@@ -116,7 +116,7 @@
             # RequireLicenseAcceptance = $false
 
             # External dependent modules of this module
-            ExternalModuleDependencies = @("MicrosoftTeams")
+            # ExternalModuleDependencies = @("MicrosoftTeams")
 
         } # End of PSData hashtable
 
