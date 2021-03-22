@@ -85,3 +85,47 @@ function Get-TeamsVideoMeetingBackgrounds {
         $index = $index + 1
     }
 }
+
+
+<#
+.SYNOPSIS
+    删除Teams客户端缓存
+#>
+function Remove-TeamsClientCache {
+    [CmdletBinding(DefaultParameterSetName = 'default',
+        SupportsShouldProcess = $true,
+        PositionalBinding = $false,
+        HelpUri = 'http://www.microsoft.com/',
+        ConfirmImpact = 'Medium')]
+    [Alias()]
+    [OutputType([String])]
+    Param ()
+    
+    begin {
+        $res = Read-Host -Prompt "这个命令将退出当前的Teams，并且清理客户端缓存，是否继续【y/N】?"
+
+        if ($res.ToLower() -ne "y") {
+            return
+        }
+    }
+    
+    process {
+        $errorpreference = $ErrorActionPreference
+        $ErrorActionPreference = "SilentlyContinue"
+        Get-Process | Where-Object { $_.ProcessName -eq "Teams" } | Stop-Process
+        Remove-Item –path $env:APPDATA"\Microsoft\teams\cache\*" | Out-Null
+        Remove-Item –path $env:APPDATA"\Microsoft\teams\blob_storage\*" | Out-Null
+        Remove-Item –path $env:APPDATA"\Microsoft\teams\databases\*" | Out-Null
+        Remove-Item –path $env:APPDATA"\Microsoft\teams\GPUcache\*" | Out-Null
+        Remove-Item –path $env:APPDATA"\Microsoft\teams\IndexedDB\*" -recurse | Out-Null
+        Remove-Item –path $env:APPDATA"\Microsoft\teams\Local Storage\*" -recurse | Out-Null
+        Remove-Item –path $env:APPDATA"\Microsoft\teams\tmp\*" | Out-Null
+        Remove-Item –path $env:APPDATA"\Microsoft\teams\Code Cache\*" | Out-Null
+        Remove-Item –path $env:APPDATA"\Microsoft\teams\backgrounds\*" -Recurse | Out-Null
+        Write-Host "客户端缓存已经清理，请重新启动Teams客户端"
+        $ErrorActionPreference = $errorpreference
+    }
+    
+    end {
+    }
+}
