@@ -120,7 +120,7 @@ function Remove-TeamsClientCache {
         Remove-Item –path $env:APPDATA"\Microsoft\teams\IndexedDB\*" -recurse | Out-Null
         Remove-Item –path $env:APPDATA"\Microsoft\teams\Local Storage\*" -recurse | Out-Null
         Remove-Item –path $env:APPDATA"\Microsoft\teams\tmp\*" | Out-Null
-        Remove-Item –path $env:APPDATA"\Microsoft\teams\Code Cache\*" | Out-Null
+        Remove-Item –path $env:APPDATA"\Microsoft\teams\Code Cache\*" -Recurse | Out-Null
         Remove-Item –path $env:APPDATA"\Microsoft\teams\backgrounds\*" -Recurse | Out-Null
         Write-Host "客户端缓存已经清理，请重新启动Teams客户端"
         $ErrorActionPreference = $errorpreference
