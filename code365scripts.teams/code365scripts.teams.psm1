@@ -185,6 +185,8 @@ function Import-TeamUser {
     )
     
     begin {
+        $errorpreference = $ErrorActionPreference
+        $ErrorActionPreference = "SilentlyContinue"
         EnsureRequiredModules -requiredModules @("MicrosoftTeams")
     }
     
@@ -193,6 +195,10 @@ function Import-TeamUser {
         if ($null -ne $connect) {
             $domain = $connect.Account.Id.split('@')[1]
         }
+        else {
+            Write-Host "无法连接到Teams，操作终止"
+            return
+        }
 
         $team = Get-Team -DisplayName $teamName
         if ($null -eq $team) {
@@ -200,15 +206,17 @@ function Import-TeamUser {
             return
         }
 
-        # 处理用户列表
-
+        # 处理用户列表，如果有外部用户，则检查AzureAD模块是否安装
+        $guests = $users | Where-Object { $_ -contains "@" -band $_.Split('@')[1] -ne $domain } 
+        if ($null -ne $guests) {
+            EnsureRequiredModules -requiredModules @("AzureAD")
+            Connect-AzureAD
+        }
 
         $index = 1
         $count = $users.Count
         
         foreach ($item in $users) {
-
-
             if (!($item.EndsWith("@$domain"))) {
                 $item += "@$domain"
             }
@@ -218,9 +226,15 @@ function Import-TeamUser {
                 Write-Host "$item 不是当前公司用户，取消操作"
             }
             else {
-                Add-TeamUser -GroupId $team.GroupId -User $item
+                $result = Add-TeamUser -GroupId $team.GroupId -User $item -ErrorVariable e
                 Write-Progress -Activity "批量导入用户" -Status $item -PercentComplete ($index++ / $count * 100)
-                Write-Host "$item 导入成功"
+                if ($null -ne $result) {
+                    Write-Host "$item 导入成功"
+                }
+                else {
+                    Write-Host "$item 导入失败"
+                    Write-Host "$e.Message"
+                }
 
             }
 
@@ -228,6 +242,6 @@ function Import-TeamUser {
     }
     
     end {
-        
+        $ErrorActionPreference = $errorpreference
     }
 }
