@@ -1,4 +1,4 @@
-function GenerateThumbnail {
+﻿function GenerateThumbnail {
     param (
         [string]$filePath
     )

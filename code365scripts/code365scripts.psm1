@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     升级 PowerShell 到最新版本
 .DESCRIPTION
