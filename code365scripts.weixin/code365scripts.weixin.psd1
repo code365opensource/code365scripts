@@ -9,31 +9,31 @@
 @{
 
     # Script module or binary module file associated with this manifest.
-    RootModule        = '.\code365scripts.weixin.psm1'
+    RootModule           = '.\code365scripts.weixin.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.0.2.1'
+    ModuleVersion        = '0.0.2.2'
 
     # Supported PSEditions
-    #CompatiblePSEditions = @("Desktop", "Core")
+    CompatiblePSEditions = @("Desktop", "Core")
 
     # ID used to uniquely identify this module
-    GUID              = '93d0087c-6b3e-4533-8605-8c77a4e601d9'
+    GUID                 = '93d0087c-6b3e-4533-8605-8c77a4e601d9'
 
     # Author of this module
-    Author            = '陈希章（code365)'
+    Author               = '陈希章（code365)'
 
     # Company or vendor of this module
-    CompanyName       = 'Code365'
+    CompanyName          = 'Code365'
 
     # Copyright statement for this module
-    Copyright         = '(c) code365.xyz. All rights reserved.'
+    Copyright            = '(c) code365.xyz. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description       = 'The open source powershell module built by code365.xyz'
+    Description          = 'The open source powershell module built by code365.xyz'
 
     # Minimum version of the PowerShell engine required by this module
-    # PowerShellVersion = ''
+    PowerShellVersion    = '5.1'
 
     # Name of the PowerShell host required by this module
     # PowerShellHostName = ''
@@ -69,16 +69,16 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = @("Save-WeixinNews")
+    FunctionsToExport    = @("Save-WeixinNews")
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-    CmdletsToExport   = @("Save-WeixinNews")
+    CmdletsToExport      = @("Save-WeixinNews")
 
     # Variables to export from this module
-    VariablesToExport = '*'
+    VariablesToExport    = '*'
 
     # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-    AliasesToExport   = @()
+    AliasesToExport      = @()
 
     # DSC resources to export from this module
     # DscResourcesToExport = @()
@@ -90,12 +90,12 @@
     # FileList = @()
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
-    PrivateData       = @{
+    PrivateData          = @{
 
         PSData = @{
 
             # Tags applied to this module. These help with module discovery in online galleries.
-            Tags       = @("code365", "community", "china", "chenxizhang","weixin")
+            Tags       = @("code365", "community", "china", "chenxizhang", "weixin")
 
             # A URL to the license for this module.
             LicenseUri = 'https://github.com/code365opensource/code365scripts'
@@ -123,7 +123,7 @@
     } # End of PrivateData hashtable
 
     # HelpInfo URI of this module
-    HelpInfoURI       = 'https://github.com/code365opensource/code365scripts'
+    HelpInfoURI          = 'https://github.com/code365opensource/code365scripts'
 
     # Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
     # DefaultCommandPrefix = ''

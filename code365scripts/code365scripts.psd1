@@ -12,10 +12,10 @@
     RootModule        = '.\code365scripts.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.0.8.1'
+    ModuleVersion     = '0.0.8.2'
 
     # Supported PSEditions
-    #CompatiblePSEditions = @("Desktop", "Core")
+    CompatiblePSEditions = @("Desktop", "Core")
 
     # ID used to uniquely identify this module
     GUID              = 'fd37b886-62db-427b-ac77-7d4f7cae3c81'
@@ -33,7 +33,7 @@
     Description       = 'The open source powershell module built by code365.xyz'
 
     # Minimum version of the PowerShell engine required by this module
-    # PowerShellVersion = ''
+    PowerShellVersion = '5.1'
 
     # Name of the PowerShell host required by this module
     # PowerShellHostName = ''
