@@ -9,7 +9,7 @@ PowerShell 目前也支持跨平台（Windows，Mac，Liunx）使用，只要你
 
 这个开源项目完全是用业余时间进行贡献，想到一些好的场景，有时间可能就做进去，但是更新可能不是很频繁。如果觉得这个项目还不错，请访问 <https://github.com/code365opensource/code365scripts> 并在右上角的 “Star” 按钮点击一下，相当于点一个赞啊。
 
-不要告诉我你不知道怎么打开Powershell哈！那样我会很不高兴的啊...
+不要告诉我你不知道怎么打开 Powershell 哈！那样我会很不高兴的啊...
 
 ## 提交建议和需求
 

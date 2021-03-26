@@ -164,10 +164,13 @@ function Remove-TeamsClientCache {
 .SYNOPSIS
     批量添加用户到某个团队
 .DESCRIPTION
-    通过指定用户名或者从CSV中批量导入用户到某个团队。该命令仅支持添加本公司员工。
+    通过指定用户名或者从CSV中批量导入用户到某个团队。同时支持内部用户，和外部用户（作为来宾邀请加入），如果是内部用户的话，支持不带邮箱信息直接添加。
 .EXAMPLE
     PS C:\> Import-TeamUser -teamName "开发测试" -users mike@xyz.com,tom@xyz.com
-    用逗号分开不同的用户名
+    用逗号分开不同的用户名,这里假定 mike@xyz.com 是内部用户，而 tom@abc.com 是外部用户。
+.EXAMPLE
+    PS C:\> Import-TeamUser -teamName "开发测试" -users mike@xyz.com,tom@abc.com -createTeam
+    用指定的名称创建团队，然后导入用户。用逗号分开不同的用户名,这里假定 mike@xyz.com 是内部用户，而 tom@abc.com 是外部用户。
 .EXAMPLE
     PS C:\> Import-TeamUser -teamName "开发测试" -users mike,tom
     用逗号分开不同的用户名，如果不带邮箱后缀，则自动以当前用户的邮箱后缀补充
@@ -181,7 +184,9 @@ function Import-TeamUser {
         [Parameter(ParameterSetName = "default", Mandatory = $true)]
         [string]$teamName,
         [Parameter(ParameterSetName = "default", Mandatory = $true)]
-        [string[]]$users
+        [string[]]$users,
+        [Parameter(ParameterSetName = "default")]
+        [switch]$createTeam
     )
     
     begin {
@@ -201,7 +206,13 @@ function Import-TeamUser {
             return
         }
 
-        $team = Get-Team -DisplayName $teamName
+        if ($createTeam) {
+            $team = New-Team -DisplayName $teamName
+        }
+        else {
+            $team = Get-Team -DisplayName $teamName
+        }
+
         if ($null -eq $team) {
             Write-Host "无法查找到该团队，请检查名称"
             return

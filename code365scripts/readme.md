@@ -4,7 +4,7 @@
 
 ### 如何安装
 
-打开 PowerShell 窗口，运行 `Install-Module code365scripts`
+打开 PowerShell 窗口，运行 `Install-Module code365scripts`,如果此前安装过，请运行 `Update-Module code365scripts`
 
 ### 功能介绍
 
