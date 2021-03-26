@@ -236,7 +236,7 @@ function Import-TeamUser {
 
             $result = Add-TeamUser -GroupId $team.GroupId -User $item -ErrorVariable e
             Write-Progress -Activity "批量导入用户" -Status $item -PercentComplete ($index++ / $count * 100)
-            if ($null -ne $result) {
+            if ($null -ne $e) {
                 Write-Host "$item 导入成功"
             }
             else {
