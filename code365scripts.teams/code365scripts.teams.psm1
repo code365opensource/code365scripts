@@ -228,10 +228,10 @@ function Import-TeamUser {
         $guests = $users | Where-Object { $_.Contains("@") -band $_.Split('@')[1] -ne $domain } 
         if ($null -ne $guests) {
             EnsureRequiredModules -requiredModules @("AzureAD")
-            Connect-AzureAD
+            Connect-AzureAD | Out-Null
 
             foreach ($item in $guests) {
-                New-AzureADMSInvitation -InvitedUserEmailAddress $item -InviteRedirectUrl $inviteUrl -SendInvitationMessage $true
+                New-AzureADMSInvitation -InvitedUserEmailAddress $item -InviteRedirectUrl $inviteUrl -SendInvitationMessage $true | Out-Null
                 Start-Sleep -Seconds 2
             }
         }
