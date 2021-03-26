@@ -214,7 +214,7 @@ function Import-TeamUser {
 
 
         # 处理用户列表，如果有外部用户，则检查AzureAD模块是否安装
-        $guests = $users | Where-Object { $_ -contains "@" -band $_.Split('@')[1] -ne "@$domain" } 
+        $guests = $users | Where-Object { $_.Contains("@") -band $_.Split('@')[1] -ne $domain } 
         if ($null -ne $guests) {
             EnsureRequiredModules -requiredModules @("AzureAD")
             Connect-AzureAD
@@ -234,9 +234,9 @@ function Import-TeamUser {
             }
 
 
-            $result = Add-TeamUser -GroupId $team.GroupId -User $item -ErrorVariable e
+            Add-TeamUser -GroupId $team.GroupId -User $item -ErrorVariable e
             Write-Progress -Activity "批量导入用户" -Status $item -PercentComplete ($index++ / $count * 100)
-            if ($null -ne $result) {
+            if ($null -eq $e) {
                 Write-Host "$item 导入成功"
             }
             else {
