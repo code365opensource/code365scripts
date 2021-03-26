@@ -194,6 +194,7 @@ function Import-TeamUser {
         $connect = Connect-MicrosoftTeams
         if ($null -ne $connect) {
             $domain = $connect.Account.Id.split('@')[1]
+            $tenantId = $connect.TenantId
         }
         else {
             Write-Host "无法连接到Teams，操作终止"
@@ -206,38 +207,42 @@ function Import-TeamUser {
             return
         }
 
+        $teamId = $team.GroupId
+        $channel = Get-TeamChannel -GroupId $teamId | Where-Object { $_.DisplayName -in @("General", "常规") } | Select-Object -First 1
+        $channelId = $channel.Id
+        $inviteUrl = "https://teams.microsoft.com/l/team/$channelId/conversations?groupId=$teamId&tenantId=$tenantId"
+
+
         # 处理用户列表，如果有外部用户，则检查AzureAD模块是否安装
         $guests = $users | Where-Object { $_ -contains "@" -band $_.Split('@')[1] -ne $domain } 
         if ($null -ne $guests) {
             EnsureRequiredModules -requiredModules @("AzureAD")
             Connect-AzureAD
+
+            foreach ($item in $guests) {
+                New-AzureADMSInvitation -InvitedUserEmailAddress $item -InviteRedirectUrl $inviteUrl
+                Start-Sleep -Seconds 2
+            }
         }
 
         $index = 1
         $count = $users.Count
         
         foreach ($item in $users) {
-            if (!($item.EndsWith("@$domain"))) {
+            if (!($item.Contains("@"))) {
                 $item += "@$domain"
             }
 
-            if ($item.Contains("@") -band !($item.EndsWith("@$domain"))) {
-                Write-Progress -Activity "批量导入用户" -Status "$item 不是当前公司用户，取消操作" -PercentComplete ($index++ / $count * 100)
-                Write-Host "$item 不是当前公司用户，取消操作"
+
+            $result = Add-TeamUser -GroupId $team.GroupId -User $item -ErrorVariable e
+            Write-Progress -Activity "批量导入用户" -Status $item -PercentComplete ($index++ / $count * 100)
+            if ($null -ne $result) {
+                Write-Host "$item 导入成功"
             }
             else {
-                $result = Add-TeamUser -GroupId $team.GroupId -User $item -ErrorVariable e
-                Write-Progress -Activity "批量导入用户" -Status $item -PercentComplete ($index++ / $count * 100)
-                if ($null -ne $result) {
-                    Write-Host "$item 导入成功"
-                }
-                else {
-                    Write-Host "$item 导入失败"
-                    Write-Host "$e.Message"
-                }
-
+                Write-Host "$item 导入失败"
+                Write-Host "$e.Message"
             }
-
         }
     }
     
