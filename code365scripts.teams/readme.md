@@ -22,7 +22,7 @@
 
 3. 批量导入用户到团队
 
-   经常会有这样的需求，用户希望能快速创建团队，并且批量添加用户（不管是内部用户还是外部用户）.这个命令支持为现有团队添加用户，也支持创建团队后添加用户。用户名信息，可以在命令行中直接指定，也可以通过CSV文件导入。
+   经常会有这样的需求，用户希望能快速创建团队，并且批量添加用户（不管是内部用户还是外部用户）.这个命令支持为现有团队添加用户，也支持创建团队后添加用户。用户名信息，可以在命令行中直接指定，也可以通过 CSV 文件导入。
 
    ```powershell
    .DESCRIPTION
@@ -40,4 +40,19 @@
       PS C:\> Import-TeamUser -teamName "开发测试" -users (Import-Csv data.csv).email
       从CSV中导入用户，以上命令假设用户信息文件名为 data.csv, 并且在 email 这个列中保存了用户的邮箱地址（可以带公司的后缀，也可以不带）
 
+   ```
+
+4. 从多级嵌套用户组中导入用户到团队
+
+   ```powershell
+   .SYNOPSIS
+    从一个用户组中导入用户到团队
+   .DESCRIPTION
+      支持多层嵌套用户组，不限层级
+   .EXAMPLE
+      PS C:\> Import-TeamsUserFromGroup -TeamName AllFTE -GroupName "GCR ALL FTE"
+      把GCR ALL FTE这个组的用户，全部导入到 ALLFTE 这个团队中去
+   .EXAMPLE
+      PS C:\> Import-TeamsUserFromGroup -TeamName AllFTE -GroupName "GCR ALL FTE" -createTeam
+      把GCR ALL FTE这个组的用户，全部导入到新创建的 ALLFTE 这个团队中去
    ```
