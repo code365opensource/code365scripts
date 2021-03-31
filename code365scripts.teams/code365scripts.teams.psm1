@@ -261,3 +261,88 @@ function Import-TeamUser {
         $ErrorActionPreference = $errorpreference
     }
 }
+
+Function Get-RecursiveAzureAdGroupMemberUsers {
+    [cmdletbinding()]
+    param(
+        [parameter(Mandatory = $True, ValueFromPipeline = $true)]$AzureGroup
+    )
+    Begin {
+        If (-not(Get-AzureADCurrentSessionInfo)) { Connect-AzureAD }
+    }
+    Process {
+        $Members = Get-AzureADGroupMember -ObjectId $AzureGroup.ObjectId -All $true
+            
+        $UserMembers = $Members | Where-Object { $_.ObjectType -eq 'User' }
+        If ($Members | Where-Object { $_.ObjectType -eq 'Group' }) {
+            [array]$UserMembers += $Members | Where-Object { $_.ObjectType -eq 'Group' } | ForEach-Object { Get-RecursiveAzureAdGroupMemberUsers -AzureGroup $_ }
+        }
+    }
+    end {
+        Return $UserMembers
+    }
+}
+
+
+<#
+.SYNOPSIS
+    从一个用户组中导入用户到团队
+.DESCRIPTION
+    支持多层嵌套用户组，不限层级
+.EXAMPLE
+    PS C:\> Import-TeamsUserFromGroup -TeamName AllFTE -GroupName "GCR ALL FTE"
+    把GCR ALL FTE这个组的用户，全部导入到 ALLFTE 这个团队中去
+.EXAMPLE
+    PS C:\> Import-TeamsUserFromGroup -TeamName AllFTE -GroupName "GCR ALL FTE" -createTeam
+    把GCR ALL FTE这个组的用户，全部导入到新创建的 ALLFTE 这个团队中去  
+#>
+function Import-TeamsUserFromGroup {
+    param (
+        [Parameter(Mandatory = $true)][string]$TeamName,
+        [Parameter(Mandatory = $true)][string]$GroupName,
+        [switch]$createTeam
+    )
+
+    begin {
+        $errorpreference = $ErrorActionPreference
+        $ErrorActionPreference = "SilentlyContinue"
+        EnsureRequiredModules -requiredModules @("MicrosoftTeams", "AzureAD")
+    }
+
+    process {
+        Connect-MicrosoftTeams
+        connect-AzureAD
+
+        $group = Get-AzureADGroup -SearchString $GroupName
+
+        if ($null -eq $group) {
+            Write-Host "当前无法查找到这个组: $GroupName"
+            return
+        }
+
+        if ($createTeam) {
+            $team = New-Team -DisplayName $TeamName
+        }
+        else {
+            $team = Get-Team -DisplayName $TeamName
+        }
+
+        if ($null -eq $team) {
+            Write-Host "无法查找到该团队，请检查名称"
+            return
+        }
+
+        $index = 1 
+        $members = Get-RecursiveAzureAdGroupMemberUsers -AzureGroup $group
+        $count = $members.Length
+
+        $members | ForEach-Object {
+            Add-TeamUser -GroupId $team.GroupId -User $_.UserPrincipalName
+            Write-Progress -Activity "添加用户到 $TeamName" -Status $_.UserPrincipalName -PercentComplete ($index++ / $count * 100)
+        }
+    }
+
+    end {
+        $ErrorActionPreference = $errorpreference
+    }
+}
