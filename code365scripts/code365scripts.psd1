@@ -9,31 +9,31 @@
 @{
 
     # Script module or binary module file associated with this manifest.
-    RootModule        = '.\code365scripts.psm1'
+    RootModule           = '.\code365scripts.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.0.8.2'
+    ModuleVersion        = '0.0.8.3'
 
     # Supported PSEditions
     CompatiblePSEditions = @("Desktop", "Core")
 
     # ID used to uniquely identify this module
-    GUID              = 'fd37b886-62db-427b-ac77-7d4f7cae3c81'
+    GUID                 = 'fd37b886-62db-427b-ac77-7d4f7cae3c81'
 
     # Author of this module
-    Author            = '陈希章（code365)'
+    Author               = '陈希章（code365)'
 
     # Company or vendor of this module
-    CompanyName       = 'Code365'
+    CompanyName          = 'Code365'
 
     # Copyright statement for this module
-    Copyright         = '(c) code365.xyz. All rights reserved.'
+    Copyright            = '(c) code365.xyz. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description       = 'The open source powershell module built by code365.xyz'
+    Description          = 'The open source powershell module built by code365.xyz'
 
     # Minimum version of the PowerShell engine required by this module
-    PowerShellVersion = '5.1'
+    PowerShellVersion    = '5.1'
 
     # Name of the PowerShell host required by this module
     # PowerShellHostName = ''
@@ -69,16 +69,16 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = @("Update-Powershell", "Install-Machine")
+    FunctionsToExport    = @("Update-Powershell", "Install-Machine", "Set-OfficeDefaultFont")
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-    CmdletsToExport   = @("Update-Powershell", "Install-Machine")
+    CmdletsToExport      = @("Update-Powershell", "Install-Machine", "Set-OfficeDefaultFont")
 
     # Variables to export from this module
-    VariablesToExport = '*'
+    VariablesToExport    = '*'
 
     # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-    AliasesToExport   = @("up", "im")
+    AliasesToExport      = @("up", "im")
 
     # DSC resources to export from this module
     # DscResourcesToExport = @()
@@ -90,7 +90,7 @@
     # FileList = @()
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
-    PrivateData       = @{
+    PrivateData          = @{
 
         PSData = @{
 
@@ -123,7 +123,7 @@
     } # End of PrivateData hashtable
 
     # HelpInfo URI of this module
-    HelpInfoURI       = 'https://github.com/code365opensource/code365scripts'
+    HelpInfoURI          = 'https://github.com/code365opensource/code365scripts'
 
     # Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
     # DefaultCommandPrefix = ''

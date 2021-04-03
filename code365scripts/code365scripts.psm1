@@ -79,3 +79,37 @@ function Install-Machine {
 }
 
 # 自动更新Powershell模块（默认更新code365scripts这几个模块，可以加入到powershell启动时运行）
+
+
+<#
+.SYNOPSIS
+    设置Word，Excel，PowerPoint的默认字体为微软雅黑
+#>
+function Set-OfficeDefaultFont {
+    $confirm = Read-Host -Prompt "这个命令涉及到修改注册表，所以你需要在管理员模式下打开Powershell，请问是否继续？【y/N】"
+    if ($confirm.ToLower() -ne "y") {
+        return
+    }
+
+    $confirm = Read-Host -Prompt "这个命令会覆盖本地默认的文档模板，包括PowerPoint模板，Word模板（奖默认字体设置为微软雅黑），并且修改Excel默认字体的注册表项，请问是否继续？【y/N】"
+    if ($confirm.ToLower() -ne "y") {
+        return
+    }
+
+    $path = "$home\AppData\Roaming\Microsoft\Templates"
+    
+    Write-Host "设置PowerPoint模板"
+    Invoke-WebRequest https://raw.githubusercontent.com/code365opensource/code365scripts/master/code365scripts/templates/blank.potx -OutFile "$path\blank.potx" | Out-Null
+
+    Write-Host "设置Word模板"
+    Invoke-WebRequest https://raw.githubusercontent.com/code365opensource/code365scripts/master/code365scripts/templates/normal.dotm -OutFile "$path\normal.dotm" | Out-Null
+
+    Write-Host "设置Excel注册表项"
+
+    $location = Get-Location
+    Set-Location "HKCU"
+    Set-ItemProperty -Path "HKEY_CURRENT_USER\software\policies\microsoft\office\16.0\excel\options" -Name "font" -Value "Microsoft YaHei UI,11" -Type String
+    set-location $location
+
+    
+}
