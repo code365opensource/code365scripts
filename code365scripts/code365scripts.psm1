@@ -97,12 +97,15 @@ function Set-OfficeDefaultFont {
     }
 
     $path = "$home\AppData\Roaming\Microsoft\Templates"
+    $wc = New-Object System.Net.WebClient
     
     Write-Host "设置PowerPoint模板"
-    Invoke-WebRequest https://raw.githubusercontent.com/code365opensource/code365scripts/master/code365scripts/templates/blank.potx -OutFile "$path\blank.potx" | Out-Null
+
+    $wc.DownloadFile("https://raw.githubusercontent.com/code365opensource/code365scripts/master/code365scripts/templates/blank.potx", "$path\blank.potx")
+
 
     Write-Host "设置Word模板"
-    Invoke-WebRequest https://raw.githubusercontent.com/code365opensource/code365scripts/master/code365scripts/templates/normal.dotm -OutFile "$path\normal.dotm" | Out-Null
+    $wc.DownloadFile("https://raw.githubusercontent.com/code365opensource/code365scripts/master/code365scripts/templates/normal.dotm", "$path\normal.dotm")
 
     Write-Host "设置Excel注册表项"
 
