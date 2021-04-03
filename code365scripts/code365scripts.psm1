@@ -57,7 +57,7 @@ function Install-Machine {
     Set-ExecutionPolicy Bypass -Scope Process -Force
 
     if ($useDefault) {
-        $config = Invoke-Restmethod https://raw.githubusercontent.com/code365opensource/code365scripts/master/code365scripts/config.json
+        $config = Invoke-Restmethod https://mypublicstorage2021.blob.core.windows.net/public/config.json
         $apps = $config.defaultapps."$apps"
     }
 
@@ -101,16 +101,16 @@ function Set-OfficeDefaultFont {
     
     Write-Host "设置PowerPoint模板"
 
-    $wc.DownloadFile("https://raw.githubusercontent.com/code365opensource/code365scripts/master/code365scripts/templates/blank.potx", "$path\blank.potx")
+    $wc.DownloadFile("https://mypublicstorage2021.blob.core.windows.net/public/Blank.potx", "$path\blank.potx")
 
 
     Write-Host "设置Word模板"
-    $wc.DownloadFile("https://raw.githubusercontent.com/code365opensource/code365scripts/master/code365scripts/templates/normal.dotm", "$path\normal.dotm")
+    $wc.DownloadFile("https://mypublicstorage2021.blob.core.windows.net/public/Normal.dotm", "$path\normal.dotm")
 
     Write-Host "设置Excel注册表项"
 
     $location = Get-Location
-    Set-Location "HKCU"
+    Set-Location "HKCU:"
     Set-ItemProperty -Path "HKEY_CURRENT_USER\software\policies\microsoft\office\16.0\excel\options" -Name "font" -Value "Microsoft YaHei UI,11" -Type String
     set-location $location
 
