@@ -32,6 +32,12 @@
 
    为了帮助大家更好地重用，这个工具支持加载预定义的一些应用集合，例如我定义了一个给开发人员用的集合，叫 `dev`，这里面包含了我自己常用的一些软件。如果你想直接使用，那么就可以输入 `im -apps dev -useDefault` 即可。
 
-   这些应用集合，是定义在 <https://github.com/code365opensource/code365scripts/blob/master/code365scripts/config.json>  这个文件的，你可以随时参考，如果你想贡献内容，例如你有一个针对特定人群的应用集合，你可以 `Fork` 这个项目，然后修改这个文件，并且给我提交 `Pull request`，我会视情况合并进去。
+   这些应用集合，是定义在 <https://github.com/code365opensource/code365scripts/blob/master/code365scripts/config.json> 这个文件的，你可以随时参考，如果你想贡献内容，例如你有一个针对特定人群的应用集合，你可以 `Fork` 这个项目，然后修改这个文件，并且给我提交 `Pull request`，我会视情况合并进去。
 
+1. 设置 Office 文档默认字体（微软雅黑）
 
+   在重新安装好系统后，我经常需要手工调整的就是 Office 客户端的默认字体设置，包括 Word，Excel，PowerPoint。由于我的操作系统一般是安装为英文的，所以默认情况下，这些 Office 客户端软件的字体也是英文的默认字体。但我比较喜欢微软雅黑这个字体。你可以参考 <https://docs.microsoft.com/zh-cn/office/troubleshoot/office-suite-issues/set-default-font> 的说明去手工调整字体设置。让人吐槽的地方是，这几个软件的默认字体设置的方法居然不一样，Word 和 PowerPoint 通过修改默认文档模板来实现, Excel 则需要通过修改注册表实现。
+
+   通过本模块包含的 `Set-OfficeDefaultFont` 指令，可以快速地重置以上三个软件的默认字体，为微软雅黑。
+
+   请注意：这个指令需要在管理员模式下运行，且仅对 Windows 操作系统有效。
