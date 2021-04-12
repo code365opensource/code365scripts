@@ -55,7 +55,7 @@ function EnsureRequiredModules {
             Install-Module $needToInstallModules -Scope CurrentUser
         }
         else {
-            return
+            break
         }
     }
 }
@@ -132,7 +132,7 @@ function Remove-TeamsClientCache {
         $res = Read-Host -Prompt "这个命令将退出当前的Teams，并且清理客户端缓存，是否继续【y/N】?"
 
         if ($res.ToLower() -ne "y") {
-            return
+            break
         }
 
         $errorpreference = $ErrorActionPreference
@@ -203,7 +203,7 @@ function Import-TeamUser {
         }
         else {
             Write-Host "无法连接到Teams，操作终止"
-            return
+            break
         }
 
         if ($createTeam) {
@@ -215,7 +215,7 @@ function Import-TeamUser {
 
         if ($null -eq $team) {
             Write-Host "无法查找到该团队，请检查名称"
-            return
+            break
         }
 
         $teamId = $team.GroupId
@@ -317,7 +317,7 @@ function Import-TeamsUserFromGroup {
 
         if ($null -eq $group) {
             Write-Host "当前无法查找到这个组: $GroupName"
-            return
+            break
         }
 
         if ($createTeam) {
@@ -329,7 +329,7 @@ function Import-TeamsUserFromGroup {
 
         if ($null -eq $team) {
             Write-Host "无法查找到该团队，请检查名称"
-            return
+            break
         }
 
         $index = 1 
@@ -346,3 +346,75 @@ function Import-TeamsUserFromGroup {
         $ErrorActionPreference = $errorpreference
     }
 }
+
+
+function Set-LocalDevCertificate {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$appFolder
+    )
+    
+    begin {
+
+        $isAdmin = [bool](([System.Security.Principal.WindowsIdentity]::GetCurrent()).groups -match "S-1-5-32-544")
+
+        if ($isAdmin -eq $false) {
+            Write-Host "这个操作涉及到创建证书，需要在管理员模式下运行，请退出"
+            break;
+        }
+
+        $ChocoInstalled = $false
+        if (Get-Command choco.exe -ErrorAction SilentlyContinue) {
+            $ChocoInstalled = $true
+        }
+
+        if ($ChocoInstalled -eq $false) {
+            Write-Host "正在安装choco 这个工具"
+            Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+        }
+        $opensslInstalled = $false
+        if (Get-Command openssl.exe -ErrorAction SilentlyContinue) {
+            $opensslInstalled = $true
+        }
+
+        if ($opensslInstalled -eq $false) {
+            Write-Host "正在安装openssl这个工具"
+            choco install openssl -y
+        }
+
+    }
+    
+    process {
+        $certificate = New-SelfSignedCertificate -certstorelocation cert:\localmachine\my -dnsname localhost
+        $password = "password01!"
+        $securePassword = ConvertTo-SecureString -String $password -Force -AsPlainText
+        $outFolder = Join-Path $appFolder -ChildPath '.cert'
+        if ($false -eq (Test-Path $outFolder)) {
+            New-Item $outFolder -ItemType Directory | Out-Null
+        }
+        $pfxPath = Join-Path -Path $outFolder -ChildPath "localhost.pfx"
+        Write-Host "生成$pfxPath"
+        Export-PfxCertificate -Cert $certificate -FilePath $pfxPath -Password $securePassword | Out-Null
+        Import-PfxCertificate -Password $securePassword -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\Root | Out-Null
+
+        if (Test-Path $pfxPath) {
+            $keyPath = Join-Path $outFolder "localhost-key.pem"
+            $certPath = Join-Path $outFolder "localhost.pem"
+            Write-Host "生成$keyPath"
+            openssl pkcs12 -in $pfxPath -nocerts -out $keyPath -nodes -passin pass:$password
+            Write-Host "生成$certPath"
+            openssl pkcs12 -in $pfxPath -nokeys -out $certPath -nodes -passin pass:$password
+
+
+            # 写入.env文件
+
+
+            # 写入api目录下面的package.json 文件，如果有func start这个指令的话
+        }
+    }
+    end {
+        
+    }
+}
+
