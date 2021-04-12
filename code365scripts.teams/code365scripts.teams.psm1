@@ -392,7 +392,7 @@ function Set-LocalDevCertificate {
     
     process {
         $certificate = New-SelfSignedCertificate -certstorelocation cert:\localmachine\my -dnsname localhost
-        $password = "password01!"
+        $password = "code365xyz"
         $securePassword = ConvertTo-SecureString -String $password -Force -AsPlainText
         $outFolder = Join-Path $appFolder -ChildPath '.cert'
         if ($false -eq (Test-Path $outFolder)) {
@@ -431,14 +431,31 @@ function Set-LocalDevCertificate {
             $dic.Keys | ForEach-Object {
                 $out += "$_=$($dic[$_])"
             }
-
+            Write-Host "写入环境变量文件"
             $out | Out-File $envFile
 
             # 写入api目录下面的package.json 文件，如果有func start这个指令的话
             $package = Join-Path $appFolder "api/package.json"
             if (Test-Path $package) {
-                
+                $config = Get-Content $package | ConvertFrom-Json
+                if ($null -ne $config.scripts.start -and $config.scripts.start.StartsWith("func start")) {
+                    $config.scripts.start = "func start --useHttps --cert ../.cert/localhost.pfx --password $password"
+                    Write-Host "写入api项目的package.json文件"
+                    $config | ConvertTo-Json | Out-File $package
+                }
             }
+
+            $package = Join-Path $appFolder "package.json"
+
+            if (Test-Path $package) {
+                $config = Get-Content $package | ConvertFrom-Json
+                if ($null -eq $config.proxy) {
+                    $config | Add-Member -Name proxy -Value "https://localhost:7071" -MemberType NoteProperty
+                    Write-Host "写入前端项目的package.json文件"
+                    $config | ConvertTo-Json | Out-File $package
+                }
+            }
+
         }
     }
     end {
