@@ -373,6 +373,9 @@ function Set-LocalDevCertificate {
             Write-Host "正在安装choco 这个工具"
             Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
         }
+
+        refreshenv
+
         $opensslInstalled = $false
         if (Get-Command openssl.exe -ErrorAction SilentlyContinue) {
             $opensslInstalled = $true
@@ -380,7 +383,9 @@ function Set-LocalDevCertificate {
 
         if ($opensslInstalled -eq $false) {
             Write-Host "正在安装openssl这个工具"
-            choco install openssl -y
+            choco install openssl.light -y
+
+            Set-Alias -Name "openssl" -Value "C:\Program Files\OpenSSL\bin\openssl.exe"
         }
 
     }
@@ -410,7 +415,7 @@ function Set-LocalDevCertificate {
             # 写入.env文件
             $envFile = Join-Path $appFolder ".env"
             if ($false -eq (Test-Path $envFile)) {
-                New-Item $envFile
+                New-Item $envFile | Out-Null
             }
             $dic = @{}
             Get-Content $envFile | ForEach-Object {
@@ -430,6 +435,10 @@ function Set-LocalDevCertificate {
             $out | Out-File $envFile
 
             # 写入api目录下面的package.json 文件，如果有func start这个指令的话
+            $package = Join-Path $appFolder "api/package.json"
+            if (Test-Path $package) {
+                
+            }
         }
     }
     end {
