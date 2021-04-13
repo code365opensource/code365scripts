@@ -347,103 +347,160 @@ function Import-TeamsUserFromGroup {
     }
 }
 
+function checkAdmin() {
+    return [bool](([System.Security.Principal.WindowsIdentity]::GetCurrent()).groups -match "S-1-5-32-544")
+}
 
+function testpaths($items) {
+    foreach ($item in $items) {
+        if ($false -eq (Test-Path $item)) {
+            return $false
+        }
+    }
+    return $true
+}
+<#
+.SYNOPSIS
+    设置Teams及相关前端项目本地开发证书环境
+.DESCRIPTION
+    支持生成新的证书，也支持重复利用现有证书
+.EXAMPLE
+    PS C:\> Set-LocalDevCertificate -appFolder xxxx
+    生成新的证书，并修改相关的配置文件（.env文件，package.json文件等），这个操作需要管理员身份运行PowerShell。
+.EXAMPLE
+    PS C:\> Set-LocalDevCertificate
+    为当前项目（目录），生成新的证书，并修改相关的配置文件（.env文件，package.json文件等），这个操作需要管理员身份运行PowerShell。
+.EXAMPLE
+    PS C:\> Set-LocalDevCertificate -appFolder xxxx -save
+    生成新的证书，并修改相关的配置文件（.env文件，package.json文件等），这个操作需要管理员身份运行PowerShell。操作完后，把相关证书保存到用户的根目录，一般是 c:\users\xxxxx\.cert 这个目录中，以便下次使用。
+.EXAMPLE
+    PS C:\> Set-LocalDevCertificate -appFolder xxxx -existing
+    复制现有的证书文件，并修改相关的配置文件（.env文件，package.json文件等），这个操作用普通用户身份就可以了。
+ #>
 function Set-LocalDevCertificate {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = "existing")]
     param (
-        [Parameter(Mandatory = $true)]
-        [string]$appFolder
+        [parameter(ParameterSetName = "existing")]
+        [parameter(ParameterSetName = "new")]
+        [string]$appFolder = ".",
+        [parameter(ParameterSetName = "existing")]
+        [switch]$existing,
+        [parameter(ParameterSetName = "new")]
+        [switch]$save
     )
     
     begin {
 
-        $isAdmin = [bool](([System.Security.Principal.WindowsIdentity]::GetCurrent()).groups -match "S-1-5-32-544")
+        if ($existing) {
+            # 利用现有的证书, 固定放在 $home 目录下面的.cert目录
+            $isExisting = testpaths(@((Join-Path $HOME ".cert"), (Join-Path $HOME ".cert/localhost.pfx"), (Join-Path $HOME ".cert/localhost.pem"), (Join-Path $HOME ".cert/localhost-key.pem")))
 
-        if ($isAdmin -eq $false) {
-            Write-Host "这个操作涉及到创建证书，需要在管理员模式下运行，请退出"
-            break;
+            if ($false -eq $isExisting) {
+                Write-Host "没有检查到目标目录（$home/.cert）中的合法文件，请确认"
+                break
+            }
         }
+        else {
+            $isadmin = checkAdmin
 
-        $ChocoInstalled = $false
-        if (Get-Command choco.exe -ErrorAction SilentlyContinue) {
-            $ChocoInstalled = $true
-        }
+            if ($isadmin -eq $false) {
+                Write-Host "这个操作涉及到创建证书，需要在管理员模式下运行，请退出"
+                break;
+            }
 
-        if ($ChocoInstalled -eq $false) {
-            Write-Host "正在安装choco 这个工具"
-            Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-        }
+            $ChocoInstalled = $false
+            if (Get-Command choco.exe -ErrorAction SilentlyContinue) {
+                $ChocoInstalled = $true
+            }
 
-        refreshenv
+            if ($ChocoInstalled -eq $false) {
+                Write-Host "正在安装choco 这个工具"
+                Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+            }
 
-        $opensslInstalled = $false
-        if (Get-Command openssl.exe -ErrorAction SilentlyContinue) {
-            $opensslInstalled = $true
-        }
+            refreshenv
 
-        if ($opensslInstalled -eq $false) {
-            Write-Host "正在安装openssl这个工具"
-            choco install openssl.light -y
+            $opensslInstalled = $false
+            if (Get-Command openssl.exe -ErrorAction SilentlyContinue) {
+                $opensslInstalled = $true
+            }
 
-            Set-Alias -Name "openssl" -Value "C:\Program Files\OpenSSL\bin\openssl.exe"
+            if ($opensslInstalled -eq $false) {
+                Write-Host "正在安装openssl这个工具"
+                choco install openssl.light -y
+
+                Set-Alias -Name "openssl" -Value "C:\Program Files\OpenSSL\bin\openssl.exe"
+            }
         }
 
     }
     
     process {
-        $certificate = New-SelfSignedCertificate -certstorelocation cert:\localmachine\my -dnsname localhost
-        $password = "code365xyz"
-        $securePassword = ConvertTo-SecureString -String $password -Force -AsPlainText
-        $outFolder = Join-Path $appFolder -ChildPath '.cert'
-        if ($false -eq (Test-Path $outFolder)) {
-            New-Item $outFolder -ItemType Directory | Out-Null
+
+        if ($existing) {
+            Copy-Item -Path (Join-Path $HOME ".cert") -Destination $appFolder -Recurse -Force
         }
-        $pfxPath = Join-Path -Path $outFolder -ChildPath "localhost.pfx"
-        Write-Host "生成$pfxPath"
-        Export-PfxCertificate -Cert $certificate -FilePath $pfxPath -Password $securePassword | Out-Null
-        Import-PfxCertificate -Password $securePassword -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\Root | Out-Null
-
-        if (Test-Path $pfxPath) {
-            $keyPath = Join-Path $outFolder "localhost-key.pem"
-            $certPath = Join-Path $outFolder "localhost.pem"
-            Write-Host "生成$keyPath"
-            openssl pkcs12 -in $pfxPath -nocerts -out $keyPath -nodes -passin pass:$password
-            Write-Host "生成$certPath"
-            openssl pkcs12 -in $pfxPath -nokeys -out $certPath -nodes -passin pass:$password
-
-
-            # 写入.env文件
-            $envFile = Join-Path $appFolder ".env"
-            if ($false -eq (Test-Path $envFile)) {
-                New-Item $envFile | Out-Null
+        else {
+            $certificate = New-SelfSignedCertificate -certstorelocation cert:\localmachine\my -dnsname localhost -NotAfter 2030-1-1
+            $password = "code365xyz"
+            $securePassword = ConvertTo-SecureString -String $password -Force -AsPlainText
+            $outFolder = Join-Path $appFolder -ChildPath '.cert'
+            if ($false -eq (Test-Path $outFolder)) {
+                New-Item $outFolder -ItemType Directory | Out-Null
             }
-            $dic = @{}
-            Get-Content $envFile | ForEach-Object {
-                $key, $value = $_.split("=")
-                $dic[$key] = $value
+            $pfxPath = Join-Path -Path $outFolder -ChildPath "localhost.pfx"
+            Write-Host "生成$pfxPath"
+            Export-PfxCertificate -Cert $certificate -FilePath $pfxPath -Password $securePassword | Out-Null
+            Import-PfxCertificate -Password $securePassword -FilePath $pfxPath -CertStoreLocation Cert:\LocalMachine\Root | Out-Null
+
+            if (Test-Path $pfxPath) {
+                $keyPath = Join-Path $outFolder "localhost-key.pem"
+                $certPath = Join-Path $outFolder "localhost.pem"
+                Write-Host "生成$keyPath"
+                openssl pkcs12 -in $pfxPath -nocerts -out $keyPath -nodes -passin pass:$password
+                Write-Host "生成$certPath"
+                openssl pkcs12 -in $pfxPath -nokeys -out $certPath -nodes -passin pass:$password
             }
 
-            $dic["HTTPS"] = "true"
-            $dic["SSL_CRT_FILE"] = ".cert/localhost.pem"
-            $dic["SSL_KEY_FILE"] = ".cert/localhost-key.pem"
-
-            $out = @()
-            $dic.Keys | ForEach-Object {
-                $out += "$_=$($dic[$_])"
+            if ($save) {
+                Write-Host "复制到当前用户的根目录 $home/.cert"
+                Copy-Item -Path (Join-Path $appFolder ".cert") -Destination $HOME -Recurse -Force
             }
-            Write-Host "写入环境变量文件"
-            $out | Out-File $envFile
 
-            # 写入api目录下面的package.json 文件，如果有func start这个指令的话
-            $package = Join-Path $appFolder "api/package.json"
-            if (Test-Path $package) {
-                $config = Get-Content $package | ConvertFrom-Json
-                if ($null -ne $config.scripts.start -and $config.scripts.start.StartsWith("func start")) {
-                    $config.scripts.start = "func start --useHttps --cert ../.cert/localhost.pfx --password $password"
-                    Write-Host "写入api项目的package.json文件"
-                    $config | ConvertTo-Json | Out-File $package
-                }
+        }
+
+        # 写入.env文件
+        $envFile = Join-Path $appFolder ".env"
+        if ($false -eq (Test-Path $envFile)) {
+            New-Item $envFile | Out-Null
+        }
+        $dic = @{}
+        Get-Content $envFile | ForEach-Object {
+            $key, $value = $_.split("=")
+            $dic[$key] = $value
+        }
+
+        $dic["HTTPS"] = "true"
+        $dic["SSL_CRT_FILE"] = ".cert/localhost.pem"
+        $dic["SSL_KEY_FILE"] = ".cert/localhost-key.pem"
+
+        $out = @()
+        $dic.Keys | ForEach-Object {
+            $out += "$_=$($dic[$_])"
+        }
+        Write-Host "写入环境变量文件"
+        $out | Out-File $envFile
+
+        # 写入api目录下面的package.json 文件，如果有func start这个指令的话
+        $package = Join-Path $appFolder "api/package.json"
+        if (Test-Path $package) {
+            $config = Get-Content $package | ConvertFrom-Json
+            if ($null -ne $config.scripts.start -and $config.scripts.start.StartsWith("func start")) {
+                $config.scripts.start = "func start --useHttps --cert ../.cert/localhost.pfx --password $password"
+                Write-Host "写入api项目的package.json文件"
+                $config | ConvertTo-Json | Out-File $package
             }
+
 
             $package = Join-Path $appFolder "package.json"
 
@@ -455,7 +512,6 @@ function Set-LocalDevCertificate {
                     $config | ConvertTo-Json | Out-File $package
                 }
             }
-
         }
     }
     end {
