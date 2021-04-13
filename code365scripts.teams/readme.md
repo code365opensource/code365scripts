@@ -56,3 +56,27 @@
       PS C:\> Import-TeamsUserFromGroup -TeamName AllFTE -GroupName "GCR ALL FTE" -createTeam
       把GCR ALL FTE这个组的用户，全部导入到新创建的 ALLFTE 这个团队中去
    ```
+
+5. 为 Teams 开发项目设置本地证书
+
+   出于安全方面的考虑，如果你为 Teams 开发选项卡（Tab）应用，必须通过 https 的方式来运行，这个可以通过购买证书或者发布到一些成熟的云平台（例如 Azure）来解决。那么，如何在本地开发时，怎么样零成本地构建安全的环境呢？
+
+   ```powershell
+
+   .SYNOPSIS
+      设置Teams及相关前端项目本地开发证书环境
+   .DESCRIPTION
+      支持生成新的证书，也支持重复利用现有证书
+   .EXAMPLE
+      PS C:\> Set-LocalDevCertificate -appFolder xxxx
+      生成新的证书，并修改相关的配置文件（.env文件，package.json文件等），这个操作需要管理员身份运行PowerShell。
+   .EXAMPLE
+      PS C:\> Set-LocalDevCertificate
+      为当前项目（目录），生成新的证书，并修改相关的配置文件（.env文件，package.json文件等），这个操作需要管理员身份运行PowerShell。
+   .EXAMPLE
+      PS C:\> Set-LocalDevCertificate -appFolder xxxx -save
+      生成新的证书，并修改相关的配置文件（.env文件，package.json文件等），这个操作需要管理员身份运行PowerShell。操作完后，把相关证书保存到用户的根目录，一般是 c:\users\xxxxx\.cert 这个目录中，以便下次使用。
+   .EXAMPLE
+      PS C:\> Set-LocalDevCertificate -appFolder xxxx -existing
+      复制现有的证书文件，并修改相关的配置文件（.env文件，package.json文件等），这个操作用普通用户身份就可以了。
+   ```
