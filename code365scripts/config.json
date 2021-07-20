@@ -9,9 +9,7 @@
         "winhotkey",
         "postman",
         "ngrok",
-        "7zip",
-        "sudo",
-        "openssl"
+        "7zip"
       ]
     }
   ]
