@@ -12,7 +12,7 @@
     RootModule           = '.\code365scripts.psm1'
 
     # Version number of this module.
-    ModuleVersion        = '0.0.8.5'
+    ModuleVersion        = '0.0.8.6'
 
     # Supported PSEditions
     CompatiblePSEditions = @("Desktop", "Core")
