@@ -45,7 +45,8 @@ function Install-Machine {
     [Alias("im")]
     param(
         [string[]]$apps,
-        [switch]$useDefault
+        [switch]$useDefault,
+        [switch]$setupChineseInput
     )
 
     $confirm = Read-Host -Prompt "这个命令涉及到安装软件，所以你需要在管理员模式下打开Powershell，请问是否继续？【y/N】"
@@ -55,6 +56,38 @@ function Install-Machine {
     }
 
     Set-ExecutionPolicy Bypass -Scope Process -Force
+    
+    if($setupChineseInput){
+    
+        # 添加中文输入法
+        $languagelist = Get-WinUserLanguageList
+        $languagelist.add("zh-CN")
+        Set-WinUserLanguageList $languagelist -Force
+
+        # 设置默认输入法为中文
+        Set-WinDefaultInputMethodOverride -InputTip "0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}"
+
+        # 设置系统默认语言为中文
+        Set-winsystemlocale -SystemLocale zh-CN
+
+        # 设置时区为中国
+        Set-TimeZone -Name "China Standard Time"
+
+        # 设置资源管理器中，显示文件扩展名
+        Push-Location
+        Set-Location HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+        Set-ItemProperty . HideFileExt "0"
+        Pop-Location
+
+
+        # 输入法字体设置大一些
+        Push-Location
+        Set-Location HKCU:\SOFTWARE\Microsoft\InputMethod\CandidateWindow\CHS\1
+        Set-ItemProperty . FontStyle "32.00pt;Regular;;Microsoft YaHei UI"
+        Set-ItemProperty . "Default Mode" "1"
+        Pop-Location
+
+    }
 
     if ($useDefault) {
         $config = Invoke-Restmethod https://mypublicstorage2021.blob.core.windows.net/public/config.json
@@ -76,6 +109,9 @@ function Install-Machine {
             Invoke-Expression "choco install $item -y"
         }
     }
+    
+    # 重启电脑
+    Restart-Computer
 }
 
 # 自动更新Powershell模块（默认更新code365scripts这几个模块，可以加入到powershell启动时运行）
