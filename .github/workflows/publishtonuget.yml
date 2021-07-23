@@ -40,7 +40,7 @@ jobs:
         # run only if some file in 'src' folder was changed
       - name: Publish Module to PowerShell Gallery (core)
         if: steps.changes.outputs.core == 'true'
-        uses: chenxizhang/publish-powershell-module-action@v19
+        uses: chenxizhang/publish-powershell-module-action@v20
         id: publish-core
         with:
           modulePath: code365scripts
@@ -48,7 +48,7 @@ jobs:
 
       - name: Publish Module to PowerShell Gallery (teams)
         if: steps.changes.outputs.teams == 'true'
-        uses: chenxizhang/publish-powershell-module-action@v19
+        uses: chenxizhang/publish-powershell-module-action@v20
         id: publish-teams
         with:
           modulePath: code365scripts.teams
@@ -57,7 +57,7 @@ jobs:
 
       - name: Publish Module to PowerShell Gallery (weixin)
         if: steps.changes.outputs.weixin == 'true'
-        uses: chenxizhang/publish-powershell-module-action@v19
+        uses: chenxizhang/publish-powershell-module-action@v20
         id: publish-weixin
         with:
           modulePath: code365scripts.weixin
