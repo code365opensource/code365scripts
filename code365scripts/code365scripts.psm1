@@ -29,6 +29,10 @@ function Update-Powershell {
    `Install-Machine -apps vscode,7zip,git`
    是不是很容易呢？你甚至可以用 `im -apps vscode,7zip,git`这样的快捷方式。
    为了帮助大家更好地重用，这个工具支持加载预定义的一些应用集合，例如我定义了一个给开发人员用的集合，叫 `dev`，这里面包含了我自己常用的一些软件。如果你想直接使用，那么就可以输入 `im -apps dev -useDefault` 即可。未来还可以支持更多的场景，欢迎大家给我提反馈，https://github.com/code365opensource/code365scripts/discussions/1
+
+   如果你安装英文系统，但是要一次性添加中文输入法，并且将其设置为默认输入法（初始输入为英文状态），字体输入提示变大，请使用 -setupChineseInput 这个开关
+   如果你要删除掉一些不常用的功能，请使用 -disableOptionalFeatures 这个开关
+   如果你要删除掉一些不常用的UWP（Windows Store中的应用），请使用 -removeUWPs这个开关
 .EXAMPLE
     PS C:\> Install-Machine -apps vscode,git,7zip
     这是常规用法，安装以上四个应用
@@ -96,21 +100,25 @@ function Install-Machine {
         $apps = $config.defaultapps."$apps"
     }
 
-    if (!(Test-Path "$env:programdata\chocoportable\bin\choco.exe")) {
-        Invoke-Expression "& {$(Invoke-Restmethod https://chocolatey.org/install.ps1)}"
+    if($apps){
+        if (!(Test-Path "$env:programdata\chocoportable\bin\choco.exe")) {
+            Invoke-Expression "& {$(Invoke-Restmethod https://chocolatey.org/install.ps1)}"
+        }
+
+        $list = Invoke-Expression "choco list --localonly"
+
+        foreach ($item in $apps) {
+            $found = $list -like "$item*"
+            if ($null -ne $found) {
+                Invoke-Expression "choco upgrade $item -y"
+            }
+            else {
+                Invoke-Expression "choco install $item -y"
+            }
+        }
     }
 
-    $list = Invoke-Expression "choco list --localonly"
 
-    foreach ($item in $apps) {
-        $found = $list -like "$item*"
-        if ($null -ne $found) {
-            Invoke-Expression "choco upgrade $item -y"
-        }
-        else {
-            Invoke-Expression "choco install $item -y"
-        }
-    }
 
     # 禁用所有的可选功能
     if($disableOptionalFeatures){
