@@ -46,7 +46,9 @@ function Install-Machine {
     param(
         [string[]]$apps,
         [switch]$useDefault,
-        [switch]$setupChineseInput
+        [switch]$setupChineseInput,
+        [switch]$disableOptionalFeatures,
+        [switch]$removeUWPs
     )
 
     $confirm = Read-Host -Prompt "这个命令涉及到安装软件，所以你需要在管理员模式下打开Powershell，请问是否继续？【y/N】"
@@ -90,7 +92,7 @@ function Install-Machine {
     }
 
     if ($useDefault) {
-        $config = Invoke-Restmethod https://mypublicstorage2021.blob.core.windows.net/public/config.json
+        $config = Invoke-Restmethod "https://mypublicstorage2021.blob.core.windows.net/public/config.json"
         $apps = $config.defaultapps."$apps"
     }
 
@@ -107,6 +109,22 @@ function Install-Machine {
         }
         else {
             Invoke-Expression "choco install $item -y"
+        }
+    }
+
+    # 禁用所有的可选功能
+    if($disableOptionalFeatures){
+        Get-WindowsOptionalFeature -Online | Where-Object {$_.State -eq "Enabled"} | Disable-WindowsOptionalFeature -Online -NoRestart
+        Get-WindowsCapability -Online | ?{($_.Name -notlike "Language.*") -and  ($_.state -eq "Installed")} | Remove-WindowsCapability -Online
+    }
+
+
+    # 删除不用的UWP
+    if($removeUWPs){
+        $apps ="Microsoft.People,Microsoft.Office.OneNote,Microsoft.YourPhone,Microsoft.BingWeather,Microsoft.Getstarted,Microsoft.MicrosoftOfficeHub,Microsoft.WindowsCamera,Microsoft.WindowsCalculator,Microsoft.Xbox.TCUI,Microsoft.XboxGamingOverlay,Microsoft.WindowsAlarms,Microsoft.ZuneVideo,Microsoft.XboxSpeechToTextOverlay,Microsoft.SkypeApp,Microsoft.WindowsMaps,Microsoft.WindowsFeedbackHub,Microsoft.XboxApp,Microsoft.MicrosoftStickyNotes,Microsoft.XboxGameOverlay,Microsoft.MicrosoftSolitaireCollection,Microsoft.MSPaint,Microsoft.Microsoft3DViewer,Microsoft.Wallet,Microsoft.ZuneMusic,microsoft.windowscommunicationsapps,Microsoft.MixedReality.Portal,Microsoft.GetHelp,Microsoft.WindowsSoundRecorder,Microsoft.549981C3F5F10"
+
+        $apps.split(",") | foreach {
+            Get-AppxPackage -Name $_ | Remove-AppxPackage
         }
     }
     
@@ -127,7 +145,7 @@ function Set-OfficeDefaultFont {
         return
     }
 
-    $confirm = Read-Host -Prompt "这个命令会覆盖本地默认的文档模板，包括PowerPoint模板，Word模板（奖默认字体设置为微软雅黑），并且修改Excel默认字体的注册表项，请问是否继续？【y/N】"
+    $confirm = Read-Host -Prompt "这个命令会覆盖本地默认的文档模板，包括PowerPoint模板，Word模板（将默认字体设置为微软雅黑），并且修改Excel默认字体的注册表项，请问是否继续？【y/N】"
     if ($confirm.ToLower() -ne "y") {
         return
     }
