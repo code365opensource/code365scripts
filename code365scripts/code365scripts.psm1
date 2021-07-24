@@ -123,7 +123,7 @@ function Install-Machine {
     # 禁用所有的可选功能
     if($disableOptionalFeatures){
         Get-WindowsOptionalFeature -Online | Where-Object {$_.State -eq "Enabled"} | Disable-WindowsOptionalFeature -Online -NoRestart
-        Get-WindowsCapability -Online | ?{($_.Name -notlike "Language.*") -and  ($_.state -eq "Installed")} | Remove-WindowsCapability -Online
+        Get-WindowsCapability -Online | Where-Object{($_.Name -notlike "Language.*") -and ($_.Name -notlike "Microsoft.Windows.Notepad.System*") -and ($_.state -eq "Installed")} | Remove-WindowsCapability -Online
     }
 
 
@@ -131,7 +131,7 @@ function Install-Machine {
     if($removeUWPs){
         $apps ="Microsoft.People,Microsoft.Office.OneNote,Microsoft.YourPhone,Microsoft.BingWeather,Microsoft.Getstarted,Microsoft.MicrosoftOfficeHub,Microsoft.WindowsCamera,Microsoft.WindowsCalculator,Microsoft.Xbox.TCUI,Microsoft.XboxGamingOverlay,Microsoft.WindowsAlarms,Microsoft.ZuneVideo,Microsoft.XboxSpeechToTextOverlay,Microsoft.SkypeApp,Microsoft.WindowsMaps,Microsoft.WindowsFeedbackHub,Microsoft.XboxApp,Microsoft.MicrosoftStickyNotes,Microsoft.XboxGameOverlay,Microsoft.MicrosoftSolitaireCollection,Microsoft.MSPaint,Microsoft.Microsoft3DViewer,Microsoft.Wallet,Microsoft.ZuneMusic,microsoft.windowscommunicationsapps,Microsoft.MixedReality.Portal,Microsoft.GetHelp,Microsoft.WindowsSoundRecorder,Microsoft.549981C3F5F10"
 
-        $apps.split(",") | foreach {
+        $apps.split(",") | ForEach-Object {
             Get-AppxPackage -Name $_ | Remove-AppxPackage
         }
     }
