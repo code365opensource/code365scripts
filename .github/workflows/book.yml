@@ -23,6 +23,6 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: test
-        uses: chenxizhang/powershell-action@v2
+        uses: chenxizhang/powershell-actions@v2
         with:
           script: gps
