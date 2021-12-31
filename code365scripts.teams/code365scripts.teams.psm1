@@ -519,3 +519,48 @@ function Set-LocalDevCertificate {
     }
 }
 
+<#
+.SYNOPSIS
+    创建单点登录应用
+.DESCRIPTION
+    创建单点登录应用（AAD 注册）
+.EXAMPLE
+    PS C:\> New-TeamsSSOAppliction -name "testapp" -url "https://www.testapp.com"
+    创建单点登录应用，并自动授权Teams，Outlook，Office客户端可以访问。
+ #>
+
+function New-TeamsSSOAppliction {
+
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $True)][string]
+        $name,
+        [Parameter(Mandatory = $True)][string]
+        $url
+    )
+
+    $account = Connect-AzureAD
+    $user = Get-AzureADUser -SearchString $account.Account.Id
+
+    $app = New-AzureADApplication -DisplayName $name -Oauth2AllowImplicitFlow $true -ReplyUrls "$url/auth-end"
+    Add-AzureADMSApplicationOwner -ObjectId $app.ObjectId -RefObjectId $user.ObjectId
+    $url = $url.Replace("https://", "").Replace("http://", "")
+
+
+    #expose an API
+    Set-AzureADApplication -ObjectId $app.ObjectId -IdentifierUris "api://$url/$($app.AppId)"
+    $apiApp = Get-AzureADMSApplication -ObjectId $app.ObjectId
+    $permissionId = $apiApp.Api.Oauth2PermissionScopes[0].Id
+    $apiApp.Api.PreAuthorizedApplications = New-Object 'System.Collections.Generic.List[Microsoft.Open.MSGraph.Model.PreAuthorizedApplication]'
+    #preauthorize application
+    $ids = "1fec8e78-bce4-4aaf-ab1b-5451cc387264", "5e3ce6c0-2b1f-4285-8d4b-75ee78787346", "4345a7b9-9a63-4910-a426-35363201d503", "4765445b-32c6-49b0-83e6-1d93765276ca", "0ec893e0-5785-4de6-99da-4ed124e5296c", "d3590ed6-52b3-4102-aeff-aad2292ab01c", "00000002-0000-0ff1-ce00-000000000000", "bc59ab01-8403-45c6-8796-ac3ef710b3e3"
+
+    foreach ($item in $ids) {
+        $preAuthorizedApplication1 = New-Object 'Microsoft.Open.MSGraph.Model.PreAuthorizedApplication'
+        $preAuthorizedApplication1.AppId = $item
+        $preAuthorizedApplication1.DelegatedPermissionIds = @($permissionId)
+        $apiApp.Api.PreAuthorizedApplications.Add($preAuthorizedApplication1)
+    }
+
+    Set-AzureADMSApplication -ObjectId $app.ObjectId -Api $apiApp.Api
+}
