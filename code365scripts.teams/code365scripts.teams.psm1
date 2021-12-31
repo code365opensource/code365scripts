@@ -546,6 +546,8 @@ function New-TeamsSSOAppliction {
     Add-AzureADMSApplicationOwner -ObjectId $app.ObjectId -RefObjectId $user.ObjectId
     $url = $url.Replace("https://", "").Replace("http://", "")
 
+    Write-Host "ClientID: $($app.AppId)"
+    Write-Host "Single-Sign-On URL: api://$url/$($app.AppId)"
 
     #expose an API
     Set-AzureADApplication -ObjectId $app.ObjectId -IdentifierUris "api://$url/$($app.AppId)"
