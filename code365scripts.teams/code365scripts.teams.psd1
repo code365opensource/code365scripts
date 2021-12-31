@@ -12,7 +12,7 @@
     RootModule           = '.\code365scripts.teams.psm1'
 
     # Version number of this module.
-    ModuleVersion        = '0.0.9'
+    ModuleVersion        = '0.0.9.1'
 
     # Supported PSEditions
     CompatiblePSEditions = @("Desktop")
@@ -21,7 +21,7 @@
     GUID                 = '15ab7bed-688e-4831-886a-a35f079e528d'
 
     # Author of this module
-    Author               = '陈希章（code365)'
+    Author               = 'chenxizhang（code365)'
 
     # Company or vendor of this module
     CompanyName          = 'Code365'
@@ -69,10 +69,10 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport    = @("Get-TeamsVideoMeetingBackgrounds", "Remove-TeamsClientCache", "Import-TeamUser", "Import-TeamsUserFromGroup", "Set-LocalDevCertificate")
+    FunctionsToExport    = @("Get-TeamsVideoMeetingBackgrounds", "Remove-TeamsClientCache", "Import-TeamUser", "Import-TeamsUserFromGroup", "Set-LocalDevCertificate", "New-TeamsSSOAppliction")
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-    CmdletsToExport      = @("Get-TeamsVideoMeetingBackgrounds", "Remove-TeamsClientCache", "Import-TeamUser", "Import-TeamsUserFromGroup", "Set-LocalDevCertificate")
+    CmdletsToExport      = @("Get-TeamsVideoMeetingBackgrounds", "Remove-TeamsClientCache", "Import-TeamUser", "Import-TeamsUserFromGroup", "Set-LocalDevCertificate", "New-TeamsSSOAppliction")
 
     # Variables to export from this module
     VariablesToExport    = '*'
