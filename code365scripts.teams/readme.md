@@ -83,15 +83,15 @@
 
 6. 为 Teams 应用创建AAD SSO （单点登录）注册
 
-如果你开发Teams应用，需要实现单点登录，你可以按照[这里文档](https://docs.microsoft.com/zh-cn/microsoftteams/platform/tabs/how-to/authentication/auth-aad-sso)的介绍配置，也可以用这个命令快速完成。
+   如果你开发Teams应用，需要实现单点登录，你可以按照[这里文档](https://docs.microsoft.com/zh-cn/microsoftteams/platform/tabs/how-to/authentication/auth-aad-sso)的介绍配置，也可以用这个命令快速完成。
 
-```powershell
-.SYNOPSIS
-    创建单点登录应用
-.DESCRIPTION
-    创建单点登录应用（AAD 注册）
-.EXAMPLE
-    PS C:\> New-TeamsSSOAppliction -name "testapp" -url "https://www.testapp.com"
-    创建单点登录应用，并自动授权Teams，Outlook，Office客户端可以访问。
+   ```powershell
+   .SYNOPSIS
+      创建单点登录应用
+   .DESCRIPTION
+      创建单点登录应用（AAD 注册）
+   .EXAMPLE
+      PS C:\> New-TeamsSSOAppliction -name "testapp" -url "https://www.testapp.com"
+      创建单点登录应用，并自动授权Teams，Outlook，Office客户端可以访问。
 
-```
+   ```
