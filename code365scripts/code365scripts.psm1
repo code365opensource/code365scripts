@@ -55,7 +55,7 @@ function Install-Machine {
         [switch]$removeUWPs
     )
 
-    $confirm = Read-Host -Prompt "这个命令涉及到安装软件，所以你需要在管理员模式下打开Powershell，请问是否继续？【y/N】"
+    $confirm = Read-Host -Prompt "Please run powershell in Administrator mode【y/N】"
 
     if ($confirm.ToLower() -ne "y") {
         return
@@ -96,7 +96,7 @@ function Install-Machine {
     }
 
     if ($useDefault) {
-        $config = Invoke-Restmethod "https://mypublicstorage2021.blob.core.windows.net/public/config.json"
+        $config = Invoke-Restmethod "https://raw.githubusercontent.com/code365opensource/code365scripts/master/code365scripts/config.json"
         $apps = $config.defaultapps."$apps"
     }
 
@@ -148,12 +148,12 @@ function Install-Machine {
     设置Word，Excel，PowerPoint的默认字体为微软雅黑
 #>
 function Set-OfficeDefaultFont {
-    $confirm = Read-Host -Prompt "这个命令涉及到修改注册表，所以你需要在管理员模式下打开Powershell，请问是否继续？【y/N】"
+    $confirm = Read-Host -Prompt "Please run powershell in Administrator mode【y/N】"
     if ($confirm.ToLower() -ne "y") {
         return
     }
 
-    $confirm = Read-Host -Prompt "这个命令会覆盖本地默认的文档模板，包括PowerPoint模板，Word模板（将默认字体设置为微软雅黑），并且修改Excel默认字体的注册表项，请问是否继续？【y/N】"
+    $confirm = Read-Host -Prompt "The operation will set default template for Word and PowerPoint, and set font of Excel, do you want to continue?【y/N】"
     if ($confirm.ToLower() -ne "y") {
         return
     }
@@ -161,15 +161,15 @@ function Set-OfficeDefaultFont {
     $path = "$home\AppData\Roaming\Microsoft\Templates"
     $wc = New-Object System.Net.WebClient
     
-    Write-Host "设置PowerPoint模板"
+    Write-Host "Set Powerpoint template"
 
-    $wc.DownloadFile("https://mypublicstorage2021.blob.core.windows.net/public/Blank.potx", "$path\blank.potx")
+    $wc.DownloadFile("https://github.com/code365opensource/code365scripts/blob/master/code365scripts/templates/Blank.potx?raw=true", "$path\blank.potx")
 
 
-    Write-Host "设置Word模板"
-    $wc.DownloadFile("https://mypublicstorage2021.blob.core.windows.net/public/Normal.dotm", "$path\normal.dotm")
+    Write-Host "Set Word template"
+    $wc.DownloadFile("https://github.com/code365opensource/code365scripts/blob/master/code365scripts/templates/Normal.dotm?raw=true", "$path\normal.dotm")
 
-    Write-Host "设置Excel注册表项"
+    Write-Host "Set Excel options"
 
     $location = Get-Location
     Set-Location "HKCU:"

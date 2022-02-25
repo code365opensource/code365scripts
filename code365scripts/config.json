@@ -3,7 +3,7 @@
     {
       "dev": [
         "vscode",
-        "anaconda3",
+        "dotnet",
         "git",
         "nodejs-lts",
         "postman",

@@ -12,7 +12,7 @@
     RootModule           = '.\code365scripts.psm1'
 
     # Version number of this module.
-    ModuleVersion        = '0.0.9.2'
+    ModuleVersion        = '0.0.9.3'
 
     # Supported PSEditions
     CompatiblePSEditions = @("Desktop", "Core")
@@ -21,7 +21,7 @@
     GUID                 = 'fd37b886-62db-427b-ac77-7d4f7cae3c81'
 
     # Author of this module
-    Author               = '陈希章（code365)'
+    Author               = '陈希章(code365)'
 
     # Company or vendor of this module
     CompanyName          = 'Code365'
