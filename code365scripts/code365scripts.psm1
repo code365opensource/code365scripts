@@ -55,7 +55,7 @@ function Install-Machine {
         [switch]$removeUWPs
     )
 
-    $confirm = Read-Host -Prompt "Please run powershell in Administrator mode【y/N】"
+    $confirm = Read-Host -Prompt "Please run powershell in Administrator mode [y/N]"
 
     if ($confirm.ToLower() -ne "y") {
         return
@@ -148,12 +148,7 @@ function Install-Machine {
     设置Word，Excel，PowerPoint的默认字体为微软雅黑
 #>
 function Set-OfficeDefaultFont {
-    $confirm = Read-Host -Prompt "Please run powershell in Administrator mode【y/N】"
-    if ($confirm.ToLower() -ne "y") {
-        return
-    }
-
-    $confirm = Read-Host -Prompt "The operation will set default template for Word and PowerPoint, and set font of Excel, do you want to continue?【y/N】"
+    $confirm = Read-Host -Prompt "Please run powershell in Administrator mode [y/N]"
     if ($confirm.ToLower() -ne "y") {
         return
     }
