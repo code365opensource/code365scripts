@@ -30,25 +30,36 @@ jobs:
         id: changes
         with:
           filters: |
-            core:
+            main1:
               - 'code365scripts/*.psd1'
+            core:
+              - 'code365scripts.core/*.psd1'
             teams:
               - 'code365scripts.teams/*.psd1'
             weixin:
               - 'code365scripts.weixin/*.psd1'
 
         # run only if some file in 'src' folder was changed
-      - name: Publish Module to PowerShell Gallery (core)
-        if: steps.changes.outputs.core == 'true'
-        uses: chenxizhang/publish-powershell-module-action@v22
-        id: publish-core
+      - name: Publish Module to PowerShell Gallery (main)
+        if: steps.changes.outputs.main == 'true'
+        uses: chenxizhang/publish-powershell-module-action@v23
+        id: publish-main
         with:
           modulePath: code365scripts
+          NuGetApiKey: ${{ secrets.NUGETKEY }}
+          dependencies: code365scripts.core,code365scripts.teams,code365scripts.weixin
+
+      - name: Publish Module to PowerShell Gallery (core)
+        if: steps.changes.outputs.core == 'true'
+        uses: chenxizhang/publish-powershell-module-action@v23
+        id: publish-core
+        with:
+          modulePath: code365scripts.core
           NuGetApiKey: ${{ secrets.NUGETKEY }}
 
       - name: Publish Module to PowerShell Gallery (teams)
         if: steps.changes.outputs.teams == 'true'
-        uses: chenxizhang/publish-powershell-module-action@v22
+        uses: chenxizhang/publish-powershell-module-action@v23
         id: publish-teams
         with:
           modulePath: code365scripts.teams
@@ -57,7 +68,7 @@ jobs:
 
       - name: Publish Module to PowerShell Gallery (weixin)
         if: steps.changes.outputs.weixin == 'true'
-        uses: chenxizhang/publish-powershell-module-action@v22
+        uses: chenxizhang/publish-powershell-module-action@v23
         id: publish-weixin
         with:
           modulePath: code365scripts.weixin

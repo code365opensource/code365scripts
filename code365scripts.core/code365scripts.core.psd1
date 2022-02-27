@@ -9,7 +9,7 @@
 @{
 
     # Script module or binary module file associated with this manifest.
-    # RootModule           = '.\code365scripts.psm1'
+    RootModule           = '.\code365scripts.core.psm1'
 
     # Version number of this module.
     ModuleVersion        = '1.0.0.0'
@@ -18,7 +18,7 @@
     CompatiblePSEditions = @("Desktop", "Core")
 
     # ID used to uniquely identify this module
-    GUID                 = 'fd37b886-62db-427b-ac77-7d4f7cae3c81'
+    GUID                 = 'f0015b3a-45ab-4be8-ac97-8387df9240fd'
 
     # Author of this module
     Author               = '陈希章(code365)'
@@ -51,7 +51,7 @@
     # ProcessorArchitecture = ''
 
     # Modules that must be imported into the global environment prior to importing this module
-    RequiredModules   = @("code365scripts.core","code365scripts.teams","code365scripts.weixin")
+    RequiredModules   = @()
 
     # Assemblies that must be loaded prior to importing this module
     # RequiredAssemblies = @()
@@ -69,16 +69,16 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport    = @()
+    FunctionsToExport    = @("Update-Powershell", "Install-Machine", "Set-OfficeDefaultFont")
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-    CmdletsToExport      = @()
+    CmdletsToExport      = @("Update-Powershell", "Install-Machine", "Set-OfficeDefaultFont")
 
     # Variables to export from this module
     VariablesToExport    = '*'
 
     # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-    AliasesToExport      = @()
+    AliasesToExport      = @("up", "im")
 
     # DSC resources to export from this module
     # DscResourcesToExport = @()
