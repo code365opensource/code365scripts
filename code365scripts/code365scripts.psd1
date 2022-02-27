@@ -12,7 +12,7 @@
     RootModule           = '.\code365scripts.psm1'
 
     # Version number of this module.
-    ModuleVersion        = '0.0.9.4'
+    ModuleVersion        = '0.0.9.5'
 
     # Supported PSEditions
     CompatiblePSEditions = @("Desktop", "Core")
@@ -51,7 +51,7 @@
     # ProcessorArchitecture = ''
 
     # Modules that must be imported into the global environment prior to importing this module
-    # RequiredModules   = @()
+    RequiredModules   = @("code365scripts.teams","code365scripts.weixin")
 
     # Assemblies that must be loaded prior to importing this module
     # RequiredAssemblies = @()
