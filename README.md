@@ -16,10 +16,14 @@ PowerShell 目前也支持跨平台（Windows，Mac，Liunx）使用，只要你
 1. 请访问这里提交想法和需求 <https://github.com/code365opensource/code365scripts/discussions/1>
 1. 请访问这里提交问题和反馈 <https://github.com/code365opensource/code365scripts/issues>
 
-## 核心模块 [![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/code365scripts?label=code365scripts)](https://www.powershellgallery.com/packages/code365scripts) [![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/code365scripts)](https://www.powershellgallery.com/packages/code365scripts)
+## 如何安装
 
-1. 安装 `Install-Module code365scripts`
-1. 详情 [code365scripts](./code365scripts/readme.md)
+可以通过 `Install-Module code365scripts` 一次性安装所有的模块，也可以单独安装如下模块。
+
+## 核心模块 [![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/code365scripts.core?label=code365scripts.core)](https://www.powershellgallery.com/packages/code365scripts.core) [![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/code365scripts.core)](https://www.powershellgallery.com/packages/code365scripts.core)
+
+1. 安装 `Install-Module code365scripts.core`
+1. 详情 [code365scripts.core](./code365scripts.core/readme.md)
 
 ## Teams 模块 [![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/code365scripts.teams?label=code365scripts.teams)](https://www.powershellgallery.com/packages/code365scripts.teams) [![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/code365scripts.teams)](https://www.powershellgallery.com/packages/code365scripts.teams)
 
