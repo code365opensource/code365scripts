@@ -30,7 +30,7 @@ jobs:
         id: changes
         with:
           filters: |
-            main1:
+            main:
               - 'code365scripts/*.psd1'
             core:
               - 'code365scripts.core/*.psd1'
