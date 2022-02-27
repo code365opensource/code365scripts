@@ -40,7 +40,7 @@ jobs:
         # run only if some file in 'src' folder was changed
       - name: Publish Module to PowerShell Gallery (core)
         if: steps.changes.outputs.core == 'true'
-        uses: chenxizhang/publish-powershell-module-action@v20
+        uses: chenxizhang/publish-powershell-module-action@v21
         id: publish-core
         with:
           modulePath: code365scripts
