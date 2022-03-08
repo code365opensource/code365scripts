@@ -96,7 +96,7 @@ function Install-Machine {
     }
 
     if ($useDefault) {
-        $config = Invoke-Restmethod "https://raw.githubusercontent.com/code365opensource/code365scripts/master/code365scripts/config.json"
+        $config = Invoke-Restmethod "https://github.com/code365opensource/code365scripts/raw/master/code365scripts.core/config.json"
         $apps = $config.defaultapps."$apps"
     }
 
@@ -158,11 +158,11 @@ function Set-OfficeDefaultFont {
     
     Write-Host "Set Powerpoint template"
 
-    $wc.DownloadFile("https://github.com/code365opensource/code365scripts/blob/master/code365scripts/templates/Blank.potx?raw=true", "$path\blank.potx")
+    $wc.DownloadFile("https://github.com/code365opensource/code365scripts/blob/master/code365scripts.core/templates/Blank.potx?raw=true", "$path\blank.potx")
 
 
     Write-Host "Set Word template"
-    $wc.DownloadFile("https://github.com/code365opensource/code365scripts/blob/master/code365scripts/templates/Normal.dotm?raw=true", "$path\normal.dotm")
+    $wc.DownloadFile("https://github.com/code365opensource/code365scripts/blob/master/code365scripts.core/templates/Normal.dotm?raw=true", "$path\normal.dotm")
 
     Write-Host "Set Excel options"
 
