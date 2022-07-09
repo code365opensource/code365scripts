@@ -63,7 +63,7 @@ function Install-Machine {
 
     Set-ExecutionPolicy Bypass -Scope Process -Force
     
-    if($setupChineseInput){
+    if ($setupChineseInput) {
     
         # 添加中文输入法
         $languagelist = Get-WinUserLanguageList
@@ -85,13 +85,19 @@ function Install-Machine {
         Set-ItemProperty . HideFileExt "0"
         Pop-Location
 
+        # 设置输入法默认为英文
 
-        # 输入法字体设置大一些
         Push-Location
-        Set-Location HKCU:\SOFTWARE\Microsoft\InputMethod\CandidateWindow\CHS\1
-        Set-ItemProperty . FontStyle "32.00pt;Regular;;Microsoft YaHei UI"
+        Set-Location HKCU:\SOFTWARE\Microsoft\InputMethod\Settings\CHS
         Set-ItemProperty . "Default Mode" "1"
         Pop-Location
+
+        # 输入法字体设置大一些
+        # Push-Location
+        # Set-Location HKCU:\SOFTWARE\Microsoft\InputMethod\CandidateWindow\CHS\1
+        # Set-ItemProperty . FontStyle "32.00pt;Regular;;Microsoft YaHei UI"
+        # Set-ItemProperty . "Default Mode" "1"
+        # Pop-Location
 
     }
 
@@ -100,7 +106,7 @@ function Install-Machine {
         $apps = $config.defaultapps."$apps"
     }
 
-    if($apps){
+    if ($apps) {
         if (!(Test-Path "$env:programdata\chocoportable\bin\choco.exe")) {
             Invoke-Expression "& {$(Invoke-Restmethod https://chocolatey.org/install.ps1)}"
         }
@@ -121,15 +127,42 @@ function Install-Machine {
 
 
     # 禁用所有的可选功能
-    if($disableOptionalFeatures){
-        Get-WindowsOptionalFeature -Online | Where-Object {$_.State -eq "Enabled"} | Disable-WindowsOptionalFeature -Online -NoRestart
-        Get-WindowsCapability -Online | Where-Object{($_.Name -notlike "Language.*") -and ($_.Name -notlike "Microsoft.Windows.Notepad.System*") -and ($_.state -eq "Installed")} | Remove-WindowsCapability -Online
+    if ($disableOptionalFeatures) {
+        Get-WindowsOptionalFeature -Online | Where-Object { $_.State -eq "Enabled" } | Disable-WindowsOptionalFeature -Online -NoRestart
+        $removeCapabilities = 
+        "App.StepsRecorder",
+        "App.Support.QuickAssist",
+        "Browser.InternetExplorer",
+        "DirectX.Configuration.Database",
+        "Hello.Face",
+        "Language.Handwriting",
+        "Language.OCR",
+        "Language.Speech",
+        "Language.TextToSpeech",
+        "MathRecognizer",
+        "Media.WindowsMediaPlayer",
+        "Microsoft.Windows.MSPaint",
+        "Microsoft.Windows.PowerShell.ISE",
+        "Microsoft.Windows.WordPad",
+        "OpenSSH.Client",
+        "Print.Management.Console",
+        "Windows.Client.ShellComponents",
+        "Language.Fonts.Hans",
+        "Print.Fax.Scan";
+
+        $removeCapabilities | ForEach-Object {
+            Get-WindowsCapability -Name "$($_)*" -Online `
+            | Where-Object { $_.State -eq "Installed" } `
+            | ForEach-Object {
+                Remove-WindowsCapability -Name $_ -Online
+            }
+        }
     }
 
 
     # 删除不用的UWP
-    if($removeUWPs){
-        $apps ="Microsoft.People,Microsoft.Office.OneNote,Microsoft.YourPhone,Microsoft.BingWeather,Microsoft.Getstarted,Microsoft.MicrosoftOfficeHub,Microsoft.WindowsCamera,Microsoft.WindowsCalculator,Microsoft.Xbox.TCUI,Microsoft.XboxGamingOverlay,Microsoft.WindowsAlarms,Microsoft.ZuneVideo,Microsoft.XboxSpeechToTextOverlay,Microsoft.SkypeApp,Microsoft.WindowsMaps,Microsoft.WindowsFeedbackHub,Microsoft.XboxApp,Microsoft.MicrosoftStickyNotes,Microsoft.XboxGameOverlay,Microsoft.MicrosoftSolitaireCollection,Microsoft.MSPaint,Microsoft.Microsoft3DViewer,Microsoft.Wallet,Microsoft.ZuneMusic,microsoft.windowscommunicationsapps,Microsoft.MixedReality.Portal,Microsoft.GetHelp,Microsoft.WindowsSoundRecorder,Microsoft.549981C3F5F10"
+    if ($removeUWPs) {
+        $apps = "Microsoft.People,Microsoft.Office.OneNote,Microsoft.YourPhone,Microsoft.BingWeather,Microsoft.Getstarted,Microsoft.MicrosoftOfficeHub,Microsoft.WindowsCamera,Microsoft.WindowsCalculator,Microsoft.Xbox.TCUI,Microsoft.XboxGamingOverlay,Microsoft.WindowsAlarms,Microsoft.ZuneVideo,Microsoft.XboxSpeechToTextOverlay,Microsoft.SkypeApp,Microsoft.WindowsMaps,Microsoft.WindowsFeedbackHub,Microsoft.XboxApp,Microsoft.MicrosoftStickyNotes,Microsoft.XboxGameOverlay,Microsoft.MicrosoftSolitaireCollection,Microsoft.MSPaint,Microsoft.Microsoft3DViewer,Microsoft.Wallet,Microsoft.ZuneMusic,microsoft.windowscommunicationsapps,Microsoft.MixedReality.Portal,Microsoft.GetHelp,Microsoft.WindowsSoundRecorder,Microsoft.549981C3F5F10"
 
         $apps.split(",") | ForEach-Object {
             Get-AppxPackage -Name $_ | Remove-AppxPackage
