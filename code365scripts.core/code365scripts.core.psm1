@@ -162,7 +162,7 @@ function Install-Machine {
 
     # 删除不用的UWP
     if ($removeUWPs) {
-        $apps = "Microsoft.People,Microsoft.Office.OneNote,Microsoft.YourPhone,Microsoft.BingWeather,Microsoft.Getstarted,Microsoft.MicrosoftOfficeHub,Microsoft.WindowsCamera,Microsoft.WindowsCalculator,Microsoft.Xbox.TCUI,Microsoft.XboxGamingOverlay,Microsoft.WindowsAlarms,Microsoft.ZuneVideo,Microsoft.XboxSpeechToTextOverlay,Microsoft.SkypeApp,Microsoft.WindowsMaps,Microsoft.WindowsFeedbackHub,Microsoft.XboxApp,Microsoft.MicrosoftStickyNotes,Microsoft.XboxGameOverlay,Microsoft.MicrosoftSolitaireCollection,Microsoft.MSPaint,Microsoft.Microsoft3DViewer,Microsoft.Wallet,Microsoft.ZuneMusic,microsoft.windowscommunicationsapps,Microsoft.MixedReality.Portal,Microsoft.GetHelp,Microsoft.WindowsSoundRecorder,Microsoft.549981C3F5F10"
+        $apps = "Microsoft.People,Microsoft.Office.OneNote,Microsoft.YourPhone,Microsoft.PowerAutomateDesktop,Microsoft.Todos,Microsoft.BingNews,MicrosoftTeams,Microsoft.BingWeather,Microsoft.Getstarted,Microsoft.MicrosoftOfficeHub,Microsoft.WindowsCamera,Microsoft.WindowsCalculator,Microsoft.Xbox.TCUI,Microsoft.XboxGamingOverlay,Microsoft.WindowsAlarms,Microsoft.ZuneVideo,Microsoft.XboxSpeechToTextOverlay,Microsoft.SkypeApp,Microsoft.WindowsMaps,Microsoft.WindowsFeedbackHub,Microsoft.XboxApp,Microsoft.MicrosoftStickyNotes,Microsoft.XboxGameOverlay,Microsoft.MicrosoftSolitaireCollection,Microsoft.MSPaint,Microsoft.Microsoft3DViewer,Microsoft.Wallet,Microsoft.ZuneMusic,microsoft.windowscommunicationsapps,Microsoft.MixedReality.Portal,Microsoft.GetHelp,Microsoft.WindowsSoundRecorder,Microsoft.549981C3F5F10"
 
         $apps.split(",") | ForEach-Object {
             Get-AppxPackage -Name $_ | Remove-AppxPackage
