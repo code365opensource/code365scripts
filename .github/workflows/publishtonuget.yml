@@ -51,7 +51,7 @@ jobs:
 
       - name: Publish Module to PowerShell Gallery (core)
         if: steps.changes.outputs.core == 'true'
-        uses: chenxizhang/publish-powershell-module-action@v24
+        uses: chenxizhang/publish-powershell-module-action@v25
         id: publish-core
         with:
           modulePath: code365scripts.core
@@ -59,7 +59,7 @@ jobs:
 
       - name: Publish Module to PowerShell Gallery (teams)
         if: steps.changes.outputs.teams == 'true'
-        uses: chenxizhang/publish-powershell-module-action@v24
+        uses: chenxizhang/publish-powershell-module-action@v25
         id: publish-teams
         with:
           modulePath: code365scripts.teams
@@ -68,7 +68,7 @@ jobs:
 
       - name: Publish Module to PowerShell Gallery (weixin)
         if: steps.changes.outputs.weixin == 'true'
-        uses: chenxizhang/publish-powershell-module-action@v24
+        uses: chenxizhang/publish-powershell-module-action@v25
         id: publish-weixin
         with:
           modulePath: code365scripts.weixin
