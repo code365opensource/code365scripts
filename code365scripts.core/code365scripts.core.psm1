@@ -102,7 +102,8 @@ function Install-Machine {
     }
 
     if ($useDefault) {
-        $config = Invoke-Restmethod "https://github.com/code365opensource/code365scripts/raw/master/code365scripts.core/config.json"
+        # $config = Invoke-Restmethod "https://github.com/code365opensource/code365scripts/raw/master/code365scripts.core/config.json"
+        $config = Get-Content -Path "$PSScriptRoot\config.json" | ConvertFrom-Json
         $apps = $config.defaultapps."$apps"
     }
 
@@ -187,21 +188,24 @@ function Set-OfficeDefaultFont {
     }
 
     $path = "$home\AppData\Roaming\Microsoft\Templates"
-    $wc = New-Object System.Net.WebClient
+    # $wc = New-Object System.Net.WebClient
     
     Write-Host "Set Powerpoint template"
 
-    $wc.DownloadFile("https://github.com/code365opensource/code365scripts/blob/master/code365scripts.core/templates/Blank.potx?raw=true", "$path\blank.potx")
+    Copy-Item -Path "$PSScriptRoot\templates\blank.potx" -Destination "$path\blank.potx" -Force
+    # $wc.DownloadFile("https://github.com/code365opensource/code365scripts/blob/master/code365scripts.core/templates/Blank.potx?raw=true", "$path\blank.potx")
 
 
     Write-Host "Set Word template"
-    $wc.DownloadFile("https://github.com/code365opensource/code365scripts/blob/master/code365scripts.core/templates/Normal.dotm?raw=true", "$path\normal.dotm")
+    Copy-Item -Path "$PSScriptRoot\templates\Normal.dotm" -Destination "$path\Normal.dotm" -Force
+
+    # $wc.DownloadFile("https://github.com/code365opensource/code365scripts/blob/master/code365scripts.core/templates/Normal.dotm?raw=true", "$path\normal.dotm")
 
     Write-Host "Set Excel options"
 
     $location = Get-Location
     Set-Location "HKCU:"
-    Set-ItemProperty -Path "HKEY_CURRENT_USER\software\policies\microsoft\office\16.0\excel\options" -Name "font" -Value "Microsoft YaHei UI,11" -Type String
+    Set-ItemProperty -Path "HKEY_CURRENT_USER\software\microsoft\office\16.0\excel\options" -Name "font" -Value "Microsoft YaHei UI,11" -Type String
     set-location $location
 
     

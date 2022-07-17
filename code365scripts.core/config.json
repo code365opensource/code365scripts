@@ -2,14 +2,13 @@
   "defaultapps": [
     {
       "dev": [
-        "vscode",
-        "dotnet",
         "git",
         "nodejs-lts",
         "postman",
-        "ngrok",
         "7zip",
-        "wechat"
+        "wechat",
+        "miniconda3",
+        "vscode"
       ]
     }
   ]
