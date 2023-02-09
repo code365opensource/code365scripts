@@ -38,6 +38,8 @@ jobs:
               - 'code365scripts.teams/*.psd1'
             weixin:
               - 'code365scripts.weixin/*.psd1'
+            openai:
+              - 'code365scripts.openai/*.psd1'
 
         # run only if some file in 'src' folder was changed
       - name: Publish Module to PowerShell Gallery (main)
@@ -72,4 +74,12 @@ jobs:
         id: publish-weixin
         with:
           modulePath: code365scripts.weixin
+          NuGetApiKey: ${{ secrets.NUGETKEY }}
+
+      - name: Publish Module to PowerShell Gallery (openai)
+        if: steps.changes.outputs.openai == 'true'
+        uses: chenxizhang/publish-powershell-module-action@v35
+        id: publish-openai
+        with:
+          modulePath: code365scripts.openai
           NuGetApiKey: ${{ secrets.NUGETKEY }}
