@@ -8,7 +8,7 @@
         [Parameter()][double]$temperature = 1
     )
 
-    Write-Host "欢迎来到OpenAI的世界，请输入你的提示，按 q 退出, 按 m 输入多行文本."
+    Write-Host "欢迎来到OpenAI的世界，请输入你的提示，按 q 并回车可退出对话, 按 m 并回车可输入多行文本， 按 f 并回车可从文件输入."
 
     while ($true) {
         $prompt = Read-Host -Prompt "`n提示"
@@ -25,6 +25,19 @@
                 continue
             }
             else {
+                Write-Host "你输入的多行文本是：`n$prompt"
+            }
+        }
+
+        if($prompt -eq "f") {
+            # 这是用户想要从文件输入
+            $file = Read-OpenFileDialog -WindowTitle "请选择文件"
+            if ($null -eq $file) {
+                Write-Host "你按下了取消按钮"
+                continue
+            }
+            else {
+                $prompt = Get-Content $file -Encoding utf8
                 Write-Host "你输入的多行文本是：`n$prompt"
             }
         }
@@ -57,6 +70,17 @@
     }
 }
 
+function Read-OpenFileDialog([string]$WindowTitle, [string]$InitialDirectory, [string]$Filter = "All files (*.*)|*.*", [switch]$AllowMultiSelect) {
+    Add-Type -AssemblyName System.Windows.Forms
+    $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
+    $openFileDialog.Title = $WindowTitle
+    if (![string]::IsNullOrWhiteSpace($InitialDirectory)) { $openFileDialog.InitialDirectory = $InitialDirectory }
+    $openFileDialog.Filter = $Filter
+    if ($AllowMultiSelect) { $openFileDialog.MultiSelect = $true }
+    $openFileDialog.ShowHelp = $true    # Without this line the ShowDialog() function may hang depending on system configuration and running from console vs. ISE.
+    $openFileDialog.ShowDialog() > $null
+    if ($AllowMultiSelect) { return $openFileDialog.Filenames } else { return $openFileDialog.Filename }
+}
 
 function Read-MultiLineInputBoxDialog([string]$Message, [string]$WindowTitle, [string]$DefaultText) {
     <#
