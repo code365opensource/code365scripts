@@ -36,11 +36,23 @@
             Headers     = @{"Authorization" = "Bearer $api_key" }
             ContentType = "application/json;charset=utf-8"
         }
-        
-        $response = (Invoke-WebRequest @params).Content | ConvertFrom-Json
 
-        Write-Host -ForegroundColor Red ("`n回答: - 消耗的token数量: {0} = {1} + {2}" -f $response.usage.total_tokens, $response.usage.prompt_tokens, $response.usage.completion_tokens )
-        Write-Host $response.choices[0].text -ForegroundColor Green
+        $response = Invoke-RestMethod @params
+        $result = $response.choices[0].text
+        $total_tokens = $response.usage.total_tokens
+        $prompt_tokens = $response.usage.prompt_tokens
+        $completion_tokens = $response.usage.completion_tokens
+
+
+        if ($PSVersionTable['PSVersion'].Major -eq 5) {
+            $dstEncoding = [System.Text.Encoding]::GetEncoding('iso-8859-1')
+            $srcEncoding = [System.Text.Encoding]::UTF8
+            $result = $srcEncoding.GetString([System.Text.Encoding]::Convert($srcEncoding, $dstEncoding, $srcEncoding.GetBytes($result)))
+        }
+        
+
+        Write-Host -ForegroundColor Red ("`n回答: - 消耗的token数量: {0} = {1} + {2}" -f $total_tokens, $prompt_tokens, $completion_tokens )
+        Write-Host $result -ForegroundColor Green
 
     }
 }
