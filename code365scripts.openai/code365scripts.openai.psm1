@@ -2,70 +2,89 @@
     [CmdletBinding()]
     [Alias("oai")]
     param(
-        [Parameter()][string]$api_key = $env:OPENAI_API_KEY,
+        [Parameter()][string]$api_key,
         [Parameter()][string]$engine = "text-davinci-003",
+        [Parameter()][string]$endpoint = $env:OPENAI_ENDPOINT,
         [Parameter()][int]$max_tokens = 1024,
-        [Parameter()][double]$temperature = 1
+        [Parameter()][double]$temperature = 1,
+        [Parameter()][switch]$azure
     )
 
-    Write-Host "欢迎来到OpenAI的世界，请输入你的提示，按 q 并回车可退出对话, 按 m 并回车可输入多行文本， 按 f 并回车可从文件输入."
-
-    while ($true) {
-        $prompt = Read-Host -Prompt "`n提示"
-
-        if ($prompt -eq "q") {
-            break
+    BEGIN {
+        if ($azure) {
+            $api_key = if ($api_key) { $api_key } else { if ($env:OPENAI_API_KEY_Azure) { $env:OPENAI_API_KEY_Azure } else { $env:OPENAI_API_KEY } }
+            $endpoint = "{0}openai/deployments/{1}/completions?api-version=2022-12-01" -f $endpoint, $engine
+        }
+        else {
+            $api_key = if ($api_key) { $api_key } else { $env:OPENAI_API_KEY }
+            $endpoint = "https://api.openai.com/v1/completions"
         }
 
-        if ($prompt -eq "m") {
-            # 这是用户想要输入多行文本
-            $prompt = Read-MultiLineInputBoxDialog -Message "请输入多行文本" -WindowTitle "多行文本" -DefaultText ""
-            if ($null -eq $prompt) {
-                Write-Host "你按下了取消按钮"
-                continue
+    }
+
+
+    PROCESS {
+
+        Write-Host ("`n欢迎来到OpenAI{0}的世界，请输入你的提示，按 q 并回车可退出对话, 按 m 并回车可输入多行文本， 按 f 并回车可从文件输入." -f $(if ($azure) { " (Azure版本) " } else { "" }))
+
+        while ($true) {
+            $prompt = Read-Host -Prompt "`n提示"
+
+            if ($prompt -eq "q") {
+                break
             }
-            else {
-                Write-Host "你输入的多行文本是：`n$prompt"
+
+            if ($prompt -eq "m") {
+                # 这是用户想要输入多行文本
+                $prompt = Read-MultiLineInputBoxDialog -Message "请输入多行文本" -WindowTitle "多行文本" -DefaultText ""
+                if ($null -eq $prompt) {
+                    Write-Host "你按下了取消按钮"
+                    continue
+                }
+                else {
+                    Write-Host "你输入的多行文本是：`n$prompt"
+                }
             }
-        }
 
-        if($prompt -eq "f") {
-            # 这是用户想要从文件输入
-            $file = Read-OpenFileDialog -WindowTitle "请选择文件"
-            if ($null -eq $file) {
-                Write-Host "你按下了取消按钮"
-                continue
+            if ($prompt -eq "f") {
+                # 这是用户想要从文件输入
+                $file = Read-OpenFileDialog -WindowTitle "请选择文件"
+                if ($null -eq $file) {
+                    Write-Host "你按下了取消按钮"
+                    continue
+                }
+                else {
+                    $prompt = Get-Content $file -Encoding utf8
+                    Write-Host "你输入的多行文本是：`n$prompt"
+                }
             }
-            else {
-                $prompt = Get-Content $file -Encoding utf8
-                Write-Host "你输入的多行文本是：`n$prompt"
+
+            $params = @{
+                Uri         = $endpoint
+                Method      = "POST"
+                Body        = @{model = "$engine"; prompt = "$prompt"; max_tokens = $max_tokens; temperature = $temperature } | ConvertTo-Json
+                Headers     = if ($azure) { @{"api-key" = "$api_key" } } else { @{"Authorization" = "Bearer $api_key" } }
+                ContentType = "application/json;charset=utf-8"
             }
-        }
 
-        $params = @{
-            Uri         = "https://api.openai.com/v1/completions"
-            Method      = "POST"
-            Body        = @{model = "$engine"; prompt = "$prompt"; max_tokens = $max_tokens; temperature = $temperature } | ConvertTo-Json
-            Headers     = @{"Authorization" = "Bearer $api_key" }
-            ContentType = "application/json;charset=utf-8"
-        }
-
-        $response = Invoke-RestMethod @params
-        $result = $response.choices[0].text
-        $total_tokens = $response.usage.total_tokens
-        $prompt_tokens = $response.usage.prompt_tokens
-        $completion_tokens = $response.usage.completion_tokens
+            $response = Invoke-RestMethod @params
+            $result = $response.choices[0].text
+            $total_tokens = $response.usage.total_tokens
+            $prompt_tokens = $response.usage.prompt_tokens
+            $completion_tokens = $response.usage.completion_tokens
 
 
-        if ($PSVersionTable['PSVersion'].Major -eq 5) {
-            $dstEncoding = [System.Text.Encoding]::GetEncoding('iso-8859-1')
-            $srcEncoding = [System.Text.Encoding]::UTF8
-            $result = $srcEncoding.GetString([System.Text.Encoding]::Convert($srcEncoding, $dstEncoding, $srcEncoding.GetBytes($result)))
-        }
+            if ($PSVersionTable['PSVersion'].Major -eq 5) {
+                $dstEncoding = [System.Text.Encoding]::GetEncoding('iso-8859-1')
+                $srcEncoding = [System.Text.Encoding]::UTF8
+                $result = $srcEncoding.GetString([System.Text.Encoding]::Convert($srcEncoding, $dstEncoding, $srcEncoding.GetBytes($result)))
+            }
         
 
-        Write-Host -ForegroundColor Red ("`n回答: - 消耗的token数量: {0} = {1} + {2}" -f $total_tokens, $prompt_tokens, $completion_tokens )
-        Write-Host $result -ForegroundColor Green
+            Write-Host -ForegroundColor Red ("`n回答: - 消耗的token数量: {0} = {1} + {2}" -f $total_tokens, $prompt_tokens, $completion_tokens )
+            Write-Host $result -ForegroundColor Green
+
+        }
 
     }
 }
