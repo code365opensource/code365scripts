@@ -74,8 +74,15 @@ function New-OpenAICompletion {
             Headers     = if ($azure) { @{"api-key" = "$api_key" } } else { @{"Authorization" = "Bearer $api_key" } }
             ContentType = "application/json;charset=utf-8"
         }
+        $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+        $response = Invoke-RestMethod @params
+        $stopwatch.Stop()
+        $total_tokens = $response.usage.total_tokens
+        $prompt_tokens = $response.usage.prompt_tokens
+        $completion_tokens = $response.usage.completion_tokens
 
-        Invoke-RestMethod @params
+        Write-Log -message $stopwatch.ElapsedMilliseconds, $total_tokens, $prompt_tokens, $completion_tokens
+
     }
 
 }
