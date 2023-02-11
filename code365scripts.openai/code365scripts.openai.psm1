@@ -110,6 +110,7 @@
 
             Write-Host -ForegroundColor Red ("`n[$current] 回答: 如下, 消耗的token数量: {0} = {1} + {2}" -f $total_tokens, $prompt_tokens, $completion_tokens )
             Write-Host $result -ForegroundColor Green
+            
 
         }
 
