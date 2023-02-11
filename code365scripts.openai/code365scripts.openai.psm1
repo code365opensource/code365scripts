@@ -81,6 +81,16 @@ function New-OpenAICompletion {
         $prompt_tokens = $response.usage.prompt_tokens
         $completion_tokens = $response.usage.completion_tokens
 
+        if ($PSVersionTable['PSVersion'].Major -eq 5) {
+            $dstEncoding = [System.Text.Encoding]::GetEncoding('iso-8859-1')
+            $srcEncoding = [System.Text.Encoding]::UTF8
+
+            $response.choices | ForEach-Object {
+                $_.text = $srcEncoding.GetString([System.Text.Encoding]::Convert($srcEncoding, $dstEncoding, $srcEncoding.GetBytes($_.text)))
+            }
+        }
+        
+
         Write-Log -message $stopwatch.ElapsedMilliseconds, $total_tokens, $prompt_tokens, $completion_tokens
         Write-Output $response
 
