@@ -153,7 +153,7 @@ function New-OpenAICompletion {
 
 }
 
-function New-OpenAIConversation1 {
+function New-OpenAIConversation {
     <#
     .SYNOPSIS
         使用OpenAI服务进行对话
@@ -321,7 +321,7 @@ function New-OpenAIConversation1 {
 }
 
 function Get-OpenAILogs([switch]$all) {
-<#
+    <#
     .DESCRIPTION
         获取OpenAI的日志, 这个结果可以用来进一步分析，包括调用时长，消耗的token数量等
     .SYNOPSIS
