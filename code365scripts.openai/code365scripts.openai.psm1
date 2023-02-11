@@ -135,6 +135,15 @@ function New-OpenAIConversation {
     }
 }
 
+function Get-OpenAILogs([switch]$all) {
+    if ($all) {
+        Get-ChildItem -Path $script:folder | Get-Content | ConvertFrom-Csv -Delimiter "`t" -Header Time, Duration, TotalTokens, PromptTokens, CompletionTokens 
+    }
+    else {
+        Get-Content $script:logfile | ConvertFrom-Csv -Delimiter "`t" -Header Time, Duration, TotalTokens, PromptTokens, CompletionTokens
+    }
+}
+
 function Read-OpenFileDialog([string]$WindowTitle, [string]$InitialDirectory, [string]$Filter = "All files (*.*)|*.*", [switch]$AllowMultiSelect) {
     Add-Type -AssemblyName System.Windows.Forms
     $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
