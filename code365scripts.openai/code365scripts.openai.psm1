@@ -3,8 +3,8 @@
     [Alias("oai")]
     param(
         [Parameter()][string]$api_key,
-        [Parameter()][string]$engine = "text-davinci-003",
-        [Parameter()][string]$endpoint = $env:OPENAI_ENDPOINT,
+        [Parameter()][string]$engine,
+        [Parameter()][string]$endpoint,
         [Parameter()][int]$max_tokens = 1024,
         [Parameter()][double]$temperature = 1,
         [Parameter()][switch]$azure
@@ -13,11 +13,13 @@
     BEGIN {
         if ($azure) {
             $api_key = if ($api_key) { $api_key } else { if ($env:OPENAI_API_KEY_Azure) { $env:OPENAI_API_KEY_Azure } else { $env:OPENAI_API_KEY } }
-            $endpoint = "{0}openai/deployments/{1}/completions?api-version=2022-12-01" -f $endpoint, $engine
+            $engine = if ($engine) { $engine } else { $env:OPENAI_ENGINE_Azure }
+            $endpoint = "{0}openai/deployments/{1}/completions?api-version=2022-12-01" -f $(if ($endpoint) { $endpoint }else { $env:OPENAI_ENDPOINT_Azure }), $engine
         }
         else {
             $api_key = if ($api_key) { $api_key } else { $env:OPENAI_API_KEY }
-            $endpoint = "https://api.openai.com/v1/completions"
+            $engine = if ($engine) { $engine } else { if ($env:OPENAI_ENGINE) { $env:OPENAI_ENGINE }else { "text-davinci-003" } }
+            $endpoint = if ($endpoint) { $endpoint } else { if ($env:OPENAI_ENDPOINT) { $env:OPENAI_ENDPOINT }else { "https://api.openai.com/v1/completions" } }
         }
 
     }
@@ -25,7 +27,7 @@
 
     PROCESS {
 
-        Write-Host ("`n欢迎来到OpenAI{0}的世界，请输入你的提示，按 q 并回车可退出对话, 按 m 并回车可输入多行文本， 按 f 并回车可从文件输入." -f $(if ($azure) { " (Azure版本) " } else { "" }))
+        Write-Host ("`n欢迎来到OpenAI{0}的世界，请输入你的提示。`n快捷键：按 q 并回车可退出对话, 按 m 并回车可输入多行文本， 按 f 并回车可从文件输入." -f $(if ($azure) { " (Azure版本) " } else { "" }))
 
         while ($true) {
             $prompt = Read-Host -Prompt "`n提示"
