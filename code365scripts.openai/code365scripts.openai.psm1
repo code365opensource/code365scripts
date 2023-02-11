@@ -1,4 +1,7 @@
-﻿# 用当前日期生成的日志文件
+﻿# 导入本地化数据
+Import-LocalizedData -FileName "resources.psd1" -BindingVariable "resources"
+
+# 用当前日期生成的日志文件
 $script:folder = "$env:APPDATA\code365scripts.openai"
 if (!(Test-Path $script:folder)) {
     New-Item -ItemType Directory -Path $script:folder
@@ -95,7 +98,7 @@ function New-OpenAICompletion {
         $hasError = $false
 
         if (!$api_key) {
-            Write-Error "请设置环境变量 OPENAI_API_KEY 或 OPENAI_API_KEY_AZURE 或者使用参数 -api_key"
+            Write-Error $resources.error_missing_api_key
             $hasError = $true
         }
 
