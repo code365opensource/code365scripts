@@ -22,12 +22,34 @@
             $endpoint = if ($endpoint) { $endpoint } else { if ($env:OPENAI_ENDPOINT) { $env:OPENAI_ENDPOINT }else { "https://api.openai.com/v1/completions" } }
         }
 
+        $hasError = $false
+
+        if (!$api_key) {
+            Write-Error "请设置环境变量 OPENAI_API_KEY 或 OPENAI_API_KEY_AZURE 或者使用参数 -api_key"
+            $hasError = $true
+        }
+
+        if(!$engine) {
+            Write-Error "请设置环境变量 OPENAI_ENGINE 或 OPENAI_ENGINE_AZURE 或者使用参数 -engine"
+            $hasError = $true
+        }
+
+        if (!$endpoint) {
+            Write-Error "请设置环境变量 OPENAI_ENDPOINT 或 OPENAI_ENDPOINT_AZURE 或者使用参数 -endpoint"
+            $hasError = $true
+        }
+
+        if($hasError) {
+            return
+        }
+
     }
 
 
     PROCESS {
 
-        Write-Host ("`n欢迎来到OpenAI{0}的世界，请输入你的提示。`n快捷键：按 q 并回车可退出对话, 按 m 并回车可输入多行文本， 按 f 并回车可从文件输入." -f $(if ($azure) { " (Azure版本) " } else { "" }))
+        $welcome = "`n欢迎来到OpenAI{0}的世界, 当前使用的模型是: {1}, 请输入你的提示。`n快捷键：按 q 并回车可退出对话, 按 m 并回车可输入多行文本， 按 f 并回车可从文件输入." -f $(if ($azure) { " (Azure版本) " } else { "" }), $engine
+        Write-Host $welcome -ForegroundColor Yellow
 
         while ($true) {
             $prompt = Read-Host -Prompt "`n提示"
