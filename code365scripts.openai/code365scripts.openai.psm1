@@ -1,6 +1,6 @@
 ﻿function New-OpenAIConversation {
     [CmdletBinding()]
-    [Alias("oai")]
+    [Alias("oai")][Alias("gpt")]
     param(
         [Parameter()][string]$api_key,
         [Parameter()][string]$engine,
