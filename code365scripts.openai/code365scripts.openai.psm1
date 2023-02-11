@@ -15,10 +15,9 @@ function Write-Log([array]$message) {
 }
 
 
-
-
 function New-OpenAICompletion {
     <#
+    .EXTERNALHELP code365scripts.openai-help.xml
     .SYNOPSIS
         调用OpenAI 的Completion 接口并返回结果
     .DESCRIPTION
@@ -73,14 +72,14 @@ function New-OpenAICompletion {
     [CmdletBinding()]
     [Alias("noc")]
     param(
-        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, HelpMessage = "你的提示文本")][string]$prompt,
-        [Parameter(HelpMessage = "OpenAI服务的密钥")][string]$api_key,
-        [Parameter(HelpMessage = "模型名称")][string]$engine,
-        [Parameter(HelpMessage = "服务端点")][string]$endpoint,
-        [Parameter(HelpMessage = "最大token的长度，不同的模型支持不同的长度，请参考官方文档，默认值是 1024")][int]$max_tokens = 1024,
-        [Parameter(HelpMessage = "该参数指定了模型的创造性指数，越接近1 的话，则表示可以返回更大创造性的结果。越接近0的话，则表示越返回稳定的结果。")][double]$temperature = 1,
-        [Parameter(HelpMessage = "返回的结果个数，默认为1")][int]$n = 1,
-        [Parameter(HelpMessage = "是否使用Azure OpenAI服务")][switch]$azure
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)][string]$prompt,
+        [Parameter()][string]$api_key,
+        [Parameter()][string]$engine,
+        [Parameter()][string]$endpoint,
+        [Parameter()][int]$max_tokens = 1024,
+        [Parameter()][double]$temperature = 1,
+        [Parameter()][int]$n = 1,
+        [Parameter()][switch]$azure
     )
 
     BEGIN {
@@ -94,21 +93,23 @@ function New-OpenAICompletion {
             $engine = if ($engine) { $engine } else { if ($env:OPENAI_ENGINE) { $env:OPENAI_ENGINE }else { "text-davinci-003" } }
             $endpoint = if ($endpoint) { $endpoint } else { if ($env:OPENAI_ENDPOINT) { $env:OPENAI_ENDPOINT }else { "https://api.openai.com/v1/completions" } }
         }
+    }
 
+    PROCESS {
         $hasError = $false
 
         if (!$api_key) {
-            Write-Error $resources.error_missing_api_key
+            Write-Host $resources.error_missing_api_key -ForegroundColor Red
             $hasError = $true
         }
 
         if (!$engine) {
-            Write-Error "请设置环境变量 OPENAI_ENGINE 或 OPENAI_ENGINE_AZURE 或者使用参数 -engine"
+            Write-Host $resources.error_missing_engine -ForegroundColor Red
             $hasError = $true
         }
 
         if (!$endpoint) {
-            Write-Error "请设置环境变量 OPENAI_ENDPOINT 或 OPENAI_ENDPOINT_AZURE 或者使用参数 -endpoint"
+            Write-Host $resources.error_missing_endpoint -ForegroundColor Red
             $hasError = $true
         }
 
@@ -116,9 +117,6 @@ function New-OpenAICompletion {
             return
         }
 
-    }
-
-    PROCESS {
         $params = @{
             Uri         = $endpoint
             Method      = "POST"
@@ -158,6 +156,7 @@ function New-OpenAICompletion {
 
 function New-OpenAIConversation {
     <#
+    .EXTERNALHELP code365scripts.openai-help.xml
     .SYNOPSIS
         使用OpenAI服务进行对话
     .DESCRIPTION
@@ -222,21 +221,25 @@ function New-OpenAIConversation {
             $engine = if ($engine) { $engine } else { if ($env:OPENAI_ENGINE) { $env:OPENAI_ENGINE }else { "text-davinci-003" } }
             $endpoint = if ($endpoint) { $endpoint } else { if ($env:OPENAI_ENDPOINT) { $env:OPENAI_ENDPOINT }else { "https://api.openai.com/v1/completions" } }
         }
+    }
 
+
+    PROCESS {
+        
         $hasError = $false
 
         if (!$api_key) {
-            Write-Error "请设置环境变量 OPENAI_API_KEY 或 OPENAI_API_KEY_AZURE 或者使用参数 -api_key"
+            Write-Host $resources.error_missing_api_key -ForegroundColor Red
             $hasError = $true
         }
 
         if (!$engine) {
-            Write-Error "请设置环境变量 OPENAI_ENGINE 或 OPENAI_ENGINE_AZURE 或者使用参数 -engine"
+            Write-Host $resources.error_missing_engine -ForegroundColor Red
             $hasError = $true
         }
 
         if (!$endpoint) {
-            Write-Error "请设置环境变量 OPENAI_ENDPOINT 或 OPENAI_ENDPOINT_AZURE 或者使用参数 -endpoint"
+            Write-Host $resources.error_missing_endpoint -ForegroundColor Red
             $hasError = $true
         }
 
@@ -245,21 +248,16 @@ function New-OpenAIConversation {
         }
 
 
-
-    }
-
-
-    PROCESS {
-
         $index = 1; # 用来保存问答的序号
 
 
-        $welcome = "`n欢迎来到OpenAI{0}的世界, 当前使用的模型是: {1}, 请输入你的提示。`n快捷键：按 q 并回车可退出对话, 按 m 并回车可输入多行文本， 按 f 并回车可从文件输入." -f $(if ($azure) { " (Azure版本) " } else { "" }), $engine
+        $welcome = "`n{0}`n{1}" -f ($resources.welcome -f $(if ($azure) { " $($resources.azure_version) " } else { "" }), $engine), $resources.shortcuts
+        
         Write-Host $welcome -ForegroundColor Yellow
 
         while ($true) {
             $current = $index++
-            $prompt = Read-Host -Prompt "`n[$current] 提示"
+            $prompt = Read-Host -Prompt "`n[$current] $($resources.prompt)"
             $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 
             if ($prompt -eq "q") {
@@ -268,26 +266,27 @@ function New-OpenAIConversation {
 
             if ($prompt -eq "m") {
                 # 这是用户想要输入多行文本
-                $prompt = Read-MultiLineInputBoxDialog -Message "请输入多行文本" -WindowTitle "多行文本" -DefaultText ""
+                $prompt = Read-MultiLineInputBoxDialog -Message $resources.multi_line_prompt -WindowTitle $resources.multi_line_prompt -DefaultText ""
                 if ($null -eq $prompt) {
-                    Write-Host "你按下了取消按钮"
+                    Write-Host $resources.cancel_button_message
                     continue
                 }
                 else {
-                    Write-Host "你输入的多行文本是：`n$prompt"
+                    Write-Host "$($resources.multi_line_message)`n$prompt"
                 }
             }
 
             if ($prompt -eq "f") {
                 # 这是用户想要从文件输入
-                $file = Read-OpenFileDialog -WindowTitle "请选择文件"
-                if ($null -eq $file) {
-                    Write-Host "你按下了取消按钮"
+                $file = Read-OpenFileDialog -WindowTitle $resources.file_prompt
+
+                if (!($file)) {
+                    Write-Host $resources.cancel_button_message
                     continue
                 }
                 else {
                     $prompt = Get-Content $file -Encoding utf8
-                    Write-Host "你输入的多行文本是：`n$prompt"
+                    Write-Host "$($resources.multi_line_message)`n$prompt"
                 }
             }
 
@@ -314,7 +313,7 @@ function New-OpenAIConversation {
             }
         
 
-            Write-Host -ForegroundColor Red ("`n[$current] 回答: 如下, 消耗的token数量: {0} = {1} + {2}" -f $total_tokens, $prompt_tokens, $completion_tokens )
+            Write-Host -ForegroundColor Red ("`n[$current] $($resources.response)" -f $total_tokens, $prompt_tokens, $completion_tokens )
             Write-Host $result -ForegroundColor Green
 
             Write-Log -message $stopwatch.ElapsedMilliseconds, $total_tokens, $prompt_tokens, $completion_tokens
@@ -324,22 +323,8 @@ function New-OpenAIConversation {
 }
 
 function Get-OpenAILogs([switch]$all) {
-    <#
-    .DESCRIPTION
-        获取OpenAI的日志, 这个结果可以用来进一步分析，包括调用时长，消耗的token数量等
-    .SYNOPSIS
-        获取OpenAI的日志
-    .PARAMETER all
-        是否获取所有的日志
-    .EXAMPLE
-        Get-OpenAILogs
-        获取当天的日志
-    .EXAMPLE
-        Get-OpenAILogs -all
-        获取所有的日志
-    .LINK
-        https://github.com/code365opensource/code365scripts/tree/master/code365scripts.openai
-#>
+    # .EXTERNALHELP code365scripts.openai-help.xml
+
     if ($all) {
         Get-ChildItem -Path $script:folder | Get-Content | ConvertFrom-Csv -Delimiter "`t" -Header Time, Duration, TotalTokens, PromptTokens, CompletionTokens | Format-Table
     }
@@ -435,14 +420,14 @@ function Read-MultiLineInputBoxDialog([string]$Message, [string]$WindowTitle, [s
     $okButton = New-Object System.Windows.Forms.Button
     $okButton.Location = New-Object System.Drawing.Size(415, 250)
     $okButton.Size = New-Object System.Drawing.Size(75, 25)
-    $okButton.Text = "确定"
+    $okButton.Text = $resources.dialog_okbutton_text
     $okButton.Add_Click({ $form.Tag = $textBox.Text; $form.Close() })
 
     # Create the Cancel button.
     $cancelButton = New-Object System.Windows.Forms.Button
     $cancelButton.Location = New-Object System.Drawing.Size(510, 250)
     $cancelButton.Size = New-Object System.Drawing.Size(75, 25)
-    $cancelButton.Text = "取消"
+    $cancelButton.Text = $resources.dialog_cancelbutton_text
     $cancelButton.Add_Click({ $form.Tag = $null; $form.Close() })
 
     # Create the form.

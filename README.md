@@ -40,3 +40,9 @@ PowerShell 目前也支持跨平台（Windows，Mac，Liunx）使用，只要你
 
 1. 安装 `Install-Module code365scripts.weixin`
 1. 详情 [code365scripts.weixin](./code365scripts.weixin/readme.md)
+
+
+<!-- 
+1. 如何生成帮助文档 https://learn.microsoft.com/en-us/powershell/utility-modules/platyps/create-help-using-platyps?view=ps-modules
+2. 老版本的Powershell通过安装最新的PSReadLine可以得到更好的体验
+ -->

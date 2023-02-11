@@ -5,10 +5,14 @@ name: CI
 # Controls when the action will run. 
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
-  push:
-    branches: [ master ]
-    paths:
-      - '**.psd1'
+  release:
+    types: [created]
+      paths:
+        - '**.psd1' 
+  # push:
+  #   branches: [ master ]
+  #   paths:
+  #     - '**.psd1'
 
 
   # Allows you to run this workflow manually from the Actions tab
