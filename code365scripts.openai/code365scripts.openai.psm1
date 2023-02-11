@@ -11,6 +11,75 @@ function Write-Log([array]$message) {
     Add-Content $script:logfile -Value $message
 }
 
+function New-OpenAICompletion {
+    [CmdletBinding()]
+    [Alias("noc")]
+    param(
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)][string]$prompt,
+        [Parameter()][string]$api_key,
+        [Parameter()][string]$engine,
+        [Parameter()][string]$endpoint,
+        [Parameter()][int]$max_tokens = 1024,
+        [Parameter()][double]$temperature = 1,
+        [Parameter()][int]$n = 1,
+        [Parameter()][switch]$azure
+    )
+
+    BEGIN {
+        if ($azure) {
+            $api_key = if ($api_key) { $api_key } else { if ($env:OPENAI_API_KEY_Azure) { $env:OPENAI_API_KEY_Azure } else { $env:OPENAI_API_KEY } }
+            $engine = if ($engine) { $engine } else { $env:OPENAI_ENGINE_Azure }
+            $endpoint = "{0}openai/deployments/{1}/completions?api-version=2022-12-01" -f $(if ($endpoint) { $endpoint }else { $env:OPENAI_ENDPOINT_Azure }), $engine
+        }
+        else {
+            $api_key = if ($api_key) { $api_key } else { $env:OPENAI_API_KEY }
+            $engine = if ($engine) { $engine } else { if ($env:OPENAI_ENGINE) { $env:OPENAI_ENGINE }else { "text-davinci-003" } }
+            $endpoint = if ($endpoint) { $endpoint } else { if ($env:OPENAI_ENDPOINT) { $env:OPENAI_ENDPOINT }else { "https://api.openai.com/v1/completions" } }
+        }
+
+        $hasError = $false
+
+        if (!$api_key) {
+            Write-Error "请设置环境变量 OPENAI_API_KEY 或 OPENAI_API_KEY_AZURE 或者使用参数 -api_key"
+            $hasError = $true
+        }
+
+        if (!$engine) {
+            Write-Error "请设置环境变量 OPENAI_ENGINE 或 OPENAI_ENGINE_AZURE 或者使用参数 -engine"
+            $hasError = $true
+        }
+
+        if (!$endpoint) {
+            Write-Error "请设置环境变量 OPENAI_ENDPOINT 或 OPENAI_ENDPOINT_AZURE 或者使用参数 -endpoint"
+            $hasError = $true
+        }
+
+        if ($hasError) {
+            return
+        }
+
+    }
+
+    PROCESS {
+        $params = @{
+            Uri         = $endpoint
+            Method      = "POST"
+            Body        = @{
+                model       = "$engine"
+                prompt      = "$prompt"
+                max_tokens  = $max_tokens
+                temperature = $temperature
+                n           = $n
+            } | ConvertTo-Json
+            Headers     = if ($azure) { @{"api-key" = "$api_key" } } else { @{"Authorization" = "Bearer $api_key" } }
+            ContentType = "application/json;charset=utf-8"
+        }
+
+        Invoke-RestMethod @params
+    }
+
+}
+
 function New-OpenAIConversation {
     [CmdletBinding()]
     [Alias("oai")][Alias("gpt")]
