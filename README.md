@@ -20,6 +20,12 @@ PowerShell 目前也支持跨平台（Windows，Mac，Liunx）使用，只要你
 
 可以通过 `Install-Module code365scripts` 一次性安装所有的模块，也可以单独安装如下模块。
 
+## OpenAI 模块 [![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/code365scripts.openai?label=code365scripts.openai)](https://www.powershellgallery.com/packages/code365scripts.openai) [![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/code365scripts.openai)](https://www.powershellgallery.com/packages/code365scripts.openai)
+
+1. 安装 `Install-Module code365scripts.openai`
+1. 详情 [code365scripts.openai](./code365scripts.openai/readme.md)
+
+
 ## 核心模块 [![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/code365scripts.core?label=code365scripts.core)](https://www.powershellgallery.com/packages/code365scripts.core) [![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/code365scripts.core)](https://www.powershellgallery.com/packages/code365scripts.core)
 
 1. 安装 `Install-Module code365scripts.core`
