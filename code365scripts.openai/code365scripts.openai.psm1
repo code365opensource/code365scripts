@@ -137,10 +137,10 @@ function New-OpenAIConversation {
 
 function Get-OpenAILogs([switch]$all) {
     if ($all) {
-        Get-ChildItem -Path $script:folder | Get-Content | ConvertFrom-Csv -Delimiter "`t" -Header Time, Duration, TotalTokens, PromptTokens, CompletionTokens 
+        Get-ChildItem -Path $script:folder | Get-Content | ConvertFrom-Csv -Delimiter "`t" -Header Time, Duration, TotalTokens, PromptTokens, CompletionTokens | Format-Table
     }
     else {
-        Get-Content $script:logfile | ConvertFrom-Csv -Delimiter "`t" -Header Time, Duration, TotalTokens, PromptTokens, CompletionTokens
+        Get-Content $script:logfile | ConvertFrom-Csv -Delimiter "`t" -Header Time, Duration, TotalTokens, PromptTokens, CompletionTokens | Format-Table
     }
 }
 
