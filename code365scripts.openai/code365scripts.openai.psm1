@@ -82,6 +82,7 @@ function New-OpenAICompletion {
         $completion_tokens = $response.usage.completion_tokens
 
         Write-Log -message $stopwatch.ElapsedMilliseconds, $total_tokens, $prompt_tokens, $completion_tokens
+        Write-Output $response
 
     }
 
