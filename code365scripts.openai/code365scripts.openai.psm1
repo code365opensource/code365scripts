@@ -29,7 +29,7 @@
             $hasError = $true
         }
 
-        if(!$engine) {
+        if (!$engine) {
             Write-Error "请设置环境变量 OPENAI_ENGINE 或 OPENAI_ENGINE_AZURE 或者使用参数 -engine"
             $hasError = $true
         }
@@ -39,7 +39,7 @@
             $hasError = $true
         }
 
-        if($hasError) {
+        if ($hasError) {
             return
         }
 
@@ -48,11 +48,14 @@
 
     PROCESS {
 
+        $index = 1; # 用来保存问答的序号
+
         $welcome = "`n欢迎来到OpenAI{0}的世界, 当前使用的模型是: {1}, 请输入你的提示。`n快捷键：按 q 并回车可退出对话, 按 m 并回车可输入多行文本， 按 f 并回车可从文件输入." -f $(if ($azure) { " (Azure版本) " } else { "" }), $engine
         Write-Host $welcome -ForegroundColor Yellow
 
         while ($true) {
-            $prompt = Read-Host -Prompt "`n提示"
+            $current = $index++
+            $prompt = Read-Host -Prompt "`n[$current] 提示"
 
             if ($prompt -eq "q") {
                 break
@@ -105,7 +108,7 @@
             }
         
 
-            Write-Host -ForegroundColor Red ("`n回答: - 消耗的token数量: {0} = {1} + {2}" -f $total_tokens, $prompt_tokens, $completion_tokens )
+            Write-Host -ForegroundColor Red ("`n[$current] 回答: 如下, 消耗的token数量: {0} = {1} + {2}" -f $total_tokens, $prompt_tokens, $completion_tokens )
             Write-Host $result -ForegroundColor Green
 
         }
