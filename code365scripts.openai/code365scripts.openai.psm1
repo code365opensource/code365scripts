@@ -1,4 +1,17 @@
-﻿function New-OpenAIConversation {
+﻿# 用当前日期生成的日志文件
+$script:folder = "$env:APPDATA\code365scripts.openai"
+if (!(Test-Path $script:folder)) {
+    New-Item -ItemType Directory -Path $script:folder
+}
+$script:logfile = "$script:folder\OpenAI_{0}.log" -f (Get-Date -Format "yyyyMMdd")
+
+# 用于记录日志
+function Write-Log([array]$message) {
+    $message = "{0}`t{1}" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"), ($message -join "`t")
+    Add-Content $script:logfile -Value $message
+}
+
+function New-OpenAIConversation {
     [CmdletBinding()]
     [Alias("oai")][Alias("gpt")]
     param(
@@ -43,6 +56,8 @@
             return
         }
 
+
+
     }
 
 
@@ -50,12 +65,14 @@
 
         $index = 1; # 用来保存问答的序号
 
+
         $welcome = "`n欢迎来到OpenAI{0}的世界, 当前使用的模型是: {1}, 请输入你的提示。`n快捷键：按 q 并回车可退出对话, 按 m 并回车可输入多行文本， 按 f 并回车可从文件输入." -f $(if ($azure) { " (Azure版本) " } else { "" }), $engine
         Write-Host $welcome -ForegroundColor Yellow
 
         while ($true) {
             $current = $index++
             $prompt = Read-Host -Prompt "`n[$current] 提示"
+            $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 
             if ($prompt -eq "q") {
                 break
@@ -95,6 +112,7 @@
             }
 
             $response = Invoke-RestMethod @params
+            $stopwatch.Stop()
             $result = $response.choices[0].text
             $total_tokens = $response.usage.total_tokens
             $prompt_tokens = $response.usage.prompt_tokens
@@ -110,8 +128,8 @@
 
             Write-Host -ForegroundColor Red ("`n[$current] 回答: 如下, 消耗的token数量: {0} = {1} + {2}" -f $total_tokens, $prompt_tokens, $completion_tokens )
             Write-Host $result -ForegroundColor Green
-            
 
+            Write-Log -message $stopwatch.ElapsedMilliseconds, $total_tokens, $prompt_tokens, $completion_tokens
         }
 
     }
