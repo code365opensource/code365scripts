@@ -12,7 +12,7 @@
     RootModule           = '.\code365scripts.openai.psm1'
 
     # Version number of this module.
-    ModuleVersion        = '0.0.0.20'
+    ModuleVersion        = '0.0.0.21'
 
     # Supported PSEditions
     CompatiblePSEditions = @("Desktop")
@@ -123,7 +123,7 @@
     } # End of PrivateData hashtable
 
     # HelpInfo URI of this module
-    HelpInfoURI          = 'https://github.com/code365opensource/code365scripts'
+    HelpInfoURI          = 'https://github.com/code365opensource/code365scripts/tree/master/code365scripts.openai'
 
     # Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
     # DefaultCommandPrefix = ''
