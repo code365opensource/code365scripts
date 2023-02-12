@@ -24,7 +24,7 @@ function Write-Log([array]$message) {
 }
 
 function Test-Update() {
-    if ($env:code365scripts_openai_needUpdate = $true) {
+    if ($env:code365scripts_openai_needUpdate -eq $true) {
         $confirm = Read-Host $resources.update_prompt
         if ($confirm -eq "y") {
             if ($PSVersionTable['PSVersion'].Major -eq 5) {
