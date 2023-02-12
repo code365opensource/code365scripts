@@ -13,4 +13,6 @@ ConvertFrom-StringData -StringData @'
     file_prompt = 请选择一个文件
     dialog_okbutton_text = 确定
     dialog_cancelbutton_text = 取消
+    update_prompt=我们检测到了新版本，推荐你立即更新，是否同意? [Y/N]
+    update_success=更新已完成，你需要重新执行命令.
 '@

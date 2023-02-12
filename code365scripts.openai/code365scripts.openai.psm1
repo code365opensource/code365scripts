@@ -8,10 +8,41 @@ if (!(Test-Path $script:folder)) {
 }
 $script:logfile = "$script:folder\OpenAI_{0}.log" -f (Get-Date -Format "yyyyMMdd")
 
+# 检查版本是否需要更新
+Start-Job -ScriptBlock {
+    $version = (Find-Module code365scripts.openai).Version
+    $current = (Get-Module code365scripts.openai -ListAvailable | Sort-Object -Property Version -Descending | Select-Object -First 1).Version
+    if ($version -ne $current) {
+        $env:code365scripts_openai_needUpdate = $true
+        Write-Host $env:code365scripts_openai_needUpdate
+    }
+}
+
+
 # 用于记录日志
 function Write-Log([array]$message) {
     $message = "{0}`t{1}" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"), ($message -join "`t")
     Add-Content $script:logfile -Value $message
+}
+
+function Test-Update() {
+    if ($env:code365scripts_openai_needUpdate = $true) {
+        $confirm = Read-Host $resources.update_prompt
+        if ($confirm -eq "y") {
+            if ($PSVersionTable['PSVersion'].Major -eq 5) {
+                Update-Module code365scripts.openai -Force
+                $env:code365scripts_openai_needUpdate = $false
+            }
+            else {
+                Update-Module code365scripts.openai -Scope CurrentUser -Force
+                $env:code365scripts_openai_needUpdate = $false
+            }
+
+            Write-Host $resources.update_success
+
+            break
+        }
+    }
 }
 
 
@@ -83,6 +114,9 @@ function New-OpenAICompletion {
     )
 
     BEGIN {
+
+        Test-Update # 检查更新
+
         if ($azure) {
             $api_key = if ($api_key) { $api_key } else { if ($env:OPENAI_API_KEY_Azure) { $env:OPENAI_API_KEY_Azure } else { $env:OPENAI_API_KEY } }
             $engine = if ($engine) { $engine } else { $env:OPENAI_ENGINE_Azure }
@@ -93,9 +127,8 @@ function New-OpenAICompletion {
             $engine = if ($engine) { $engine } else { if ($env:OPENAI_ENGINE) { $env:OPENAI_ENGINE }else { "text-davinci-003" } }
             $endpoint = if ($endpoint) { $endpoint } else { if ($env:OPENAI_ENDPOINT) { $env:OPENAI_ENDPOINT }else { "https://api.openai.com/v1/completions" } }
         }
-    }
 
-    PROCESS {
+
         $hasError = $false
 
         if (!$api_key) {
@@ -114,9 +147,12 @@ function New-OpenAICompletion {
         }
 
         if ($hasError) {
-            return
+            break
         }
+    }
 
+    PROCESS {
+    
         $params = @{
             Uri         = $endpoint
             Method      = "POST"
@@ -211,6 +247,9 @@ function New-OpenAIConversation {
     )
 
     BEGIN {
+
+        Test-Update # 检查更新
+
         if ($azure) {
             $api_key = if ($api_key) { $api_key } else { if ($env:OPENAI_API_KEY_Azure) { $env:OPENAI_API_KEY_Azure } else { $env:OPENAI_API_KEY } }
             $engine = if ($engine) { $engine } else { $env:OPENAI_ENGINE_Azure }
@@ -221,11 +260,8 @@ function New-OpenAIConversation {
             $engine = if ($engine) { $engine } else { if ($env:OPENAI_ENGINE) { $env:OPENAI_ENGINE }else { "text-davinci-003" } }
             $endpoint = if ($endpoint) { $endpoint } else { if ($env:OPENAI_ENDPOINT) { $env:OPENAI_ENDPOINT }else { "https://api.openai.com/v1/completions" } }
         }
-    }
 
 
-    PROCESS {
-        
         $hasError = $false
 
         if (!$api_key) {
@@ -244,12 +280,14 @@ function New-OpenAIConversation {
         }
 
         if ($hasError) {
-            return
+            break
         }
+    }
 
 
+    PROCESS {
+        
         $index = 1; # 用来保存问答的序号
-
 
         $welcome = "`n{0}`n{1}" -f ($resources.welcome -f $(if ($azure) { " $($resources.azure_version) " } else { "" }), $engine), $resources.shortcuts
         
@@ -325,6 +363,8 @@ function New-OpenAIConversation {
 function Get-OpenAILogs([switch]$all) {
     # .EXTERNALHELP code365scripts.openai-help.xml
 
+    Test-Update # 检查更新
+    
     if ($all) {
         Get-ChildItem -Path $script:folder | Get-Content | ConvertFrom-Csv -Delimiter "`t" -Header Time, Duration, TotalTokens, PromptTokens, CompletionTokens | Format-Table
     }

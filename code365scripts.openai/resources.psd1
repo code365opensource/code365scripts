@@ -13,4 +13,6 @@ ConvertFrom-StringData -StringData @'
     file_prompt = Please select a file
     dialog_okbutton_text = Ok
     dialog_cancelbutton_text = Cancel
+    update_prompt=You are using an old version of code365scripts.openai, Do you want to update it now? [Y/N]
+    update_success=Update successfully, please restart your PowerShell session.
 '@
