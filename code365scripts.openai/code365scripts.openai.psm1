@@ -36,8 +36,8 @@ function Test-Update() {
                 $env:code365scripts_openai_needUpdate = $false
             }
 
-            Write-Host $resources.update_success
-
+            # Write-Host $resources.update_success
+            Import-Module code365scripts.openai
             break
         }
     }
