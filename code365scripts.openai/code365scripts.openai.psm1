@@ -9,13 +9,11 @@ if (!(Test-Path $script:folder)) {
 $script:logfile = "$script:folder\OpenAI_{0}.log" -f (Get-Date -Format "yyyyMMdd")
 
 # 检查版本是否需要更新
+$env:code365scripts_openai_needUpdate = $false
 Start-Job -ScriptBlock {
     $version = (Find-Module code365scripts.openai).Version
     $current = (Get-Module code365scripts.openai -ListAvailable | Sort-Object -Property Version -Descending | Select-Object -First 1).Version
-    if ($version -ne $current) {
-        $env:code365scripts_openai_needUpdate = $true
-        Write-Host $env:code365scripts_openai_needUpdate
-    }
+    $env:code365scripts_openai_needUpdate = ($version -ne $current)
 }
 
 
