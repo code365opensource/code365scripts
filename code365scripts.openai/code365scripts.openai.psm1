@@ -35,8 +35,8 @@ function Test-Update() {
                 Update-Module code365scripts.openai -Scope CurrentUser -Force
                 $env:code365scripts_openai_needUpdate = $false
             }
-            
-            Import-Module code365scripts.openai
+
+            # Import-Module code365scripts.openai
             break
         }
     }
