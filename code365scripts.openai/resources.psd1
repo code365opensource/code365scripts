@@ -6,7 +6,7 @@ ConvertFrom-StringData -StringData @'
     shortcuts=Shortcuts：Press q and Enter to exit, Press m and Enter to input multi-lines prompt， Press f and Enter to select a file from disk.
     azure_version = (Azure)
     prompt = Prompt
-    response = Answered as below, Consumered tokes are : {0} = {1} + {2}
+    response = Answered as below, consumed tokes are : {0} = {1} + {2}
     multi_line_prompt = Please enter multiple lines of text
     cancel_button_message = You pressed the cancel button.
     multi_line_message = Your inputs are:
