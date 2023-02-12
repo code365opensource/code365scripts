@@ -1,5 +1,6 @@
 ﻿# 导入本地化数据
 Import-LocalizedData -FileName "resources.psd1" -BindingVariable "resources"
+Write-Host "Module is importing..."
 
 # 用当前日期生成的日志文件
 $script:folder = "$env:APPDATA\code365scripts.openai"
@@ -24,6 +25,10 @@ function Write-Log([array]$message) {
 }
 
 function Test-Update() {
+    if ($env:CHECK_UPDATE_CODE365SCRIPTS -eq 0) {
+        return
+    };
+
     if ($env:code365scripts_openai_needUpdate -eq $true) {
         $confirm = Read-Host $resources.update_prompt
         if ($confirm -eq "y") {
