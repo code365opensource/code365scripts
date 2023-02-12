@@ -7,18 +7,13 @@ if (!(Test-Path $script:folder)) {
     New-Item -ItemType Directory -Path $script:folder
 }
 $script:logfile = "$script:folder\OpenAI_{0}.log" -f (Get-Date -Format "yyyyMMdd")
-# $updateflag = "$script:folder\updateflag.txt"
 
 # 检查版本是否需要更新
-$env:code365scripts_openai_needUpdate = $false
 Start-Job -ScriptBlock {
+    $env:code365scripts_openai_needUpdate = $false
     $version = (Find-Module code365scripts.openai).Version
     $current = (Get-Module code365scripts.openai -ListAvailable | Sort-Object -Property Version -Descending | Select-Object -First 1).Version
     $env:code365scripts_openai_needUpdate = ($version -ne $current)
-
-    # Add-Content $using:updateflag -Value $env:code365scripts_openai_needUpdate
-    # Add-Content $using:updateflag -Value $version
-    # Add-Content $using:updateflag -Value $version
 }
 
 
@@ -40,8 +35,7 @@ function Test-Update() {
                 Update-Module code365scripts.openai -Scope CurrentUser -Force
                 $env:code365scripts_openai_needUpdate = $false
             }
-
-            # Write-Host $resources.update_success
+            
             Import-Module code365scripts.openai
             break
         }
