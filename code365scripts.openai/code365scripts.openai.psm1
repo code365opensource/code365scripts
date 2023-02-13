@@ -11,12 +11,25 @@ $script:logfile = "$script:folder\OpenAI_{0}.log" -f (Get-Date -Format "yyyyMMdd
 
 # 检查版本是否需要更新
 Start-Job -ScriptBlock {
-    $env:code365scripts_openai_needUpdate = $false
+    $folder = $args[0]
+    $file = "$folder\update.txt"
+
+    if (($env:CHECK_UPDATE_CODE365SCRIPTS -eq 0) -or (Test-Path $file)) {
+        return
+    }
+        
     $version = (Find-Module code365scripts.openai).Version
     $current = (Get-Module code365scripts.openai -ListAvailable | Sort-Object -Property Version -Descending | Select-Object -First 1).Version
-    $env:code365scripts_openai_needUpdate = ($version -ne $current)
-}
+    if ($version -ne $current) {
+        Set-Content $file -Value "" -Force
+    }
+    else {
+        if (Test-Path $file ) {
+            Remove-Item $file -Force
+        }
+    }
 
+}  -ArgumentList $script:folder
 
 # 用于记录日志
 function Write-Log([array]$message) {
@@ -25,26 +38,25 @@ function Write-Log([array]$message) {
 }
 
 function Test-Update() {
-    if ($env:CHECK_UPDATE_CODE365SCRIPTS -eq 0) {
+    if (($env:CHECK_UPDATE_CODE365SCRIPTS -eq 0) -or (!(Test-Path "$script:folder\update.txt"))) {
         return
     };
 
-    if ($env:code365scripts_openai_needUpdate -eq $true) {
-        $confirm = Read-Host $resources.update_prompt
-        if ($confirm -eq "y") {
-            if ($PSVersionTable['PSVersion'].Major -eq 5) {
-                Update-Module code365scripts.openai -Force
-                $env:code365scripts_openai_needUpdate = $false
-            }
-            else {
-                Update-Module code365scripts.openai -Scope CurrentUser -Force
-                $env:code365scripts_openai_needUpdate = $false
-            }
-
-            # Import-Module code365scripts.openai
-            break
+    $confirm = Read-Host $resources.update_prompt
+    if ($confirm -eq "y") {
+        if ($PSVersionTable['PSVersion'].Major -eq 5) {
+            Update-Module code365scripts.openai -Force
         }
+        else {
+            Update-Module code365scripts.openai -Scope CurrentUser -Force
+        }
+        
+        Remove-Item "$script:folder\update.txt" -Force
+
+        # Import-Module code365scripts.openai
+        break
     }
+
 }
 
 
