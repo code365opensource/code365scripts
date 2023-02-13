@@ -1,6 +1,5 @@
 ﻿# 导入本地化数据
 Import-LocalizedData -FileName "resources.psd1" -BindingVariable "resources"
-Write-Host "Module is importing..."
 
 # 用当前日期生成的日志文件
 $script:folder = "$env:APPDATA\code365scripts.openai"
