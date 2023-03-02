@@ -62,55 +62,6 @@ function Test-Update() {
 function New-OpenAICompletion {
     <#
     .EXTERNALHELP code365scripts.openai-help.xml
-    .SYNOPSIS
-        调用OpenAI 的Completion 接口并返回结果
-    .DESCRIPTION
-        同时支持OpenAI原生服务，和Azure OpenAI 服务
-    .PARAMETER prompt
-        你的提示文本
-    .PARAMETER api_key
-        OpenAI服务的密钥
-    .PARAMETER engine
-        模型名称
-    .PARAMETER endpoint
-        服务端点
-    .PARAMETER max_tokens
-        最大token的长度，不同的模型支持不同的长度，请参考官方文档，默认值是 1024
-    .PARAMETER temperature
-        该参数指定了模型的创造性指数，越接近1 的话，则表示可以返回更大创造性的结果。越接近0的话，则表示越返回稳定的结果。
-    .PARAMETER n
-        返回的结果个数，默认为1
-    .PARAMETER azure
-        是否使用Azure OpenAI服务
-    .EXAMPLE
-        New-OpenAICompletion -prompt "What's the capital of China"
-        使用OpenAI原生服务查询中国的首都信息
-    .EXAMPLE
-        New-OpenAICompletion "What's the capital of China"
-        使用OpenAI原生服务查询中国的首都信息(直接输入内容)
-    .EXAMPLE
-        "What's the capital of China" | New-OpenAICompletion
-        使用OpenAI原生服务查询中国的首都信息，通过管道传递参数
-    .EXAMPLE
-        noc "What's the capital of China"
-        使用OpenAI原生服务查询中国的首都信息(使用缩写)
-    .EXAMPLE
-        New-OpenAICompletion -prompt "What's the capital of China" -api_key "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" -engine "text-davinci-003" -endpoint "https://api.openai.com/v1/completions"
-        使用OpenAI原生服务查询中国的首都信息，通过参数指定api_key, engine, endpoint
-    .EXAMPLE
-        New-OpenAICompletion -prompt "What's the capital of China" -azure
-        使用Azure OpenAI服务查询中国的首都信息
-    .EXAMPLE
-        New-OpenAICompletion -prompt "What's the capital of China" -azure -api_key "xxxxxxxxxxxxxxx" -engine "chenxizhang" -endpoint "https://chenxizhang.openai.azure.com/"
-        使用Azure OpenAI服务查询中国的首都信息，通过参数指定api_key, engine, endpoint
-    .EXAMPLE
-        "What's the capital of China","韭菜炒蛋怎么做" | noc -azure
-        使用Azure OpenAI服务查询中国的首都信息,以及如何做菜，通过管道传递参数
-    .EXAMPLE
-        Get-Children *.txt | Get-Content | noc -azure
-        根据当前目录中的所有txt文件，使用Azure OpenAI服务查询对应的回复
-    .LINK
-        https://github.com/code365opensource/code365scripts/tree/master/code365scripts.openai
     #>
 
     [CmdletBinding()]
@@ -206,45 +157,6 @@ function New-OpenAICompletion {
 function New-OpenAIConversation {
     <#
     .EXTERNALHELP code365scripts.openai-help.xml
-    .SYNOPSIS
-        使用OpenAI服务进行对话
-    .DESCRIPTION
-        使用OpenAI服务进行对话, 支持单行文本，多行文本，以及从文件中读取文本
-    .EXAMPLE
-        New-OpenAIConversation
-        使用OpenAI服务进行对话，全部使用默认参数
-    .EXAMPLE
-        New-OpenAIConversation -azure
-        使用Azure OpenAI服务进行对话, 全部使用默认参数
-    .EXAMPLE
-        gpt
-        使用OpenAI服务进行对话，全部使用默认参数
-    .EXAMPLE
-        gpt -azure
-        使用Azure OpenAI服务进行对话, 全部使用默认参数
-    .EXAMPLE
-        gpt -api_key $api_key -engine $engine
-        使用OpenAI服务进行对话，使用指定的参数
-    .EXAMPLE
-        gpt -api_key $api_key -engine $engine -endpoint $endpoint -azure
-        使用Azure OpenAI服务进行对话，使用指定的参数
-    .EXAMPLE
-        gpt -api_key $api_key -engine $engine -endpoint $endpoint -azure -max_tokens 1024 -temperature 1 -n 1
-        使用Azure OpenAI服务进行对话，使用指定的参数
-    .PARAMETER api_key
-        OpenAI服务的API Key, 如果没有设置环境变量 OPENAI_API_KEY 或 OPENAI_API_KEY_AZURE，则必须使用该参数
-    .PARAMETER engine
-        OpenAI服务的引擎, 如果没有设置环境变量 OPENAI_ENGINE 或 OPENAI_ENGINE_AZURE，则必须使用该参数
-    .PARAMETER endpoint
-        OpenAI服务的Endpoint, 如果没有设置环境变量 OPENAI_ENDPOINT 或 OPENAI_ENDPOINT_AZURE，则必须使用该参数
-    .PARAMETER max_tokens
-        生成的文本最大长度, 默认为1024
-    .PARAMETER temperature
-        生成的文本的创造性指数, 默认为1
-    .PARAMETER azure
-        是否使用Azure OpenAI服务
-    .Link
-        https://github.com/code365opensource/code365scripts/tree/master/code365scripts.openai
     #>
 
 
@@ -371,6 +283,41 @@ function New-OpenAIConversation {
         }
 
     }
+}
+
+
+function New-ChatGPTConversation {
+    [CmdletBinding()]
+    [Alias("chatgpt")][Alias("chat")]
+    param(
+        [Parameter()][string]$api_key = $env:OPENAI_API_KEY,
+        [Parameter()][string]$engine = "gpt-3.5-turbo"
+    )
+    BEGIN {
+
+        Test-Update # 检查更新
+
+        $hasError = $false
+
+        if (!$api_key) {
+            Write-Host $resources.error_missing_api_key -ForegroundColor Red
+            $hasError = $true
+        }
+
+        if (!$engine) {
+            Write-Host $resources.error_missing_engine -ForegroundColor Red
+            $hasError = $true
+        }
+
+        if ($hasError) {
+            break
+        }
+    }
+
+    PROCESS {
+
+    }
+
 }
 
 function Get-OpenAILogs([switch]$all) {
