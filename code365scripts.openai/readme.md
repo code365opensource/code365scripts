@@ -105,7 +105,7 @@ SETX OPENAI_ENDPOINT_AZURE "你的服务地址"
 
 1. New-ChatGPTConversation (别名 chatgpt 或 chat）
     
-    这个函数可以建立一个基于ChatGPT的聊天机器人界面，以便你可以一直输入内容，并且得到答复。请注意，默认是单行输入，但通过输入 m 回车后即可多行输入，而 输入 f 回车后可以选择磁盘上的整个文件作为输入。
+    这个函数可以建立一个基于ChatGPT的聊天机器人界面，以便你可以一直输入内容，并且得到答复。请注意，默认是单行输入，但通过输入 m 回车后即可多行输入，而 输入 f 回车后可以选择磁盘上的整个文件作为输入。这个函数跟 New-OpenAICoversation 的最大区别就在于，它调用的是真正的ChatGPT的模型（默认就是gpt-3.5-turbo），而且它是有上下文理解能力的。当前我实现的版本，默认会把最近的5个消息历史作为上下文。
     
     ![image](https://user-images.githubusercontent.com/1996954/222958989-b5ebfa89-7473-4946-a32c-470b9e2b7926.png)
 
