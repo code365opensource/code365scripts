@@ -82,7 +82,7 @@ SETX OPENAI_ENDPOINT_AZURE "你的服务地址"
           noc "帮我写一个100字以内的感谢信" -api_key xxxxxx -engine "text-ada-001" -max_tokens 200 -temperature 0.5 -n 10
      
 
-3. New-OpenAICoversation (别名 gpt 或 oai）
+1. New-OpenAICoversation (别名 gpt 或 oai）
     
     这个函数可以建立一个聊天机器人界面，以便你可以一直输入内容，并且得到答复，而不需要每次都去调用 New-OpenAICompletion 这个方法。请注意，默认是单行输入，但通过输入 m 回车后即可多行输入，而 输入 f 回车后可以选择磁盘上的整个文件作为输入。
           

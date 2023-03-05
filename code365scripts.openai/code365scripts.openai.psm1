@@ -291,7 +291,8 @@ function New-ChatGPTConversation {
     [Alias("chatgpt")][Alias("chat")]
     param(
         [Parameter()][string]$api_key = $env:OPENAI_API_KEY,
-        [Parameter()][string]$engine = "gpt-3.5-turbo"
+        [Parameter()][string]$engine = "gpt-3.5-turbo",
+        [switch]$azure
     )
     BEGIN {
 
@@ -315,7 +316,86 @@ function New-ChatGPTConversation {
     }
 
     PROCESS {
+        $index = 1; # 用来保存问答的序号
+        $welcome = "`n{0}`n{1}" -f ($resources.welcome_chatgpt -f $(if ($azure) { " $($resources.azure_version) " } else { "" }), $engine), $resources.shortcuts
 
+        Write-Host $welcome -ForegroundColor Yellow
+
+        $messages = @()
+        
+        while ($true) {
+            $current = $index++
+            $prompt = Read-Host -Prompt "`n[$current] $($resources.prompt)"
+            $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+
+            if ($prompt -eq "q") {
+                break
+            }
+
+            if ($prompt -eq "m") {
+                # 这是用户想要输入多行文本
+                $prompt = Read-MultiLineInputBoxDialog -Message $resources.multi_line_prompt -WindowTitle $resources.multi_line_prompt -DefaultText ""
+                if ($null -eq $prompt) {
+                    Write-Host $resources.cancel_button_message
+                    continue
+                }
+                else {
+                    Write-Host "$($resources.multi_line_message)`n$prompt"
+                }
+            }
+
+            if ($prompt -eq "f") {
+                # 这是用户想要从文件输入
+                $file = Read-OpenFileDialog -WindowTitle $resources.file_prompt
+
+                if (!($file)) {
+                    Write-Host $resources.cancel_button_message
+                    continue
+                }
+                else {
+                    $prompt = Get-Content $file -Encoding utf8
+                    Write-Host "$($resources.multi_line_message)`n$prompt"
+                }
+            }
+
+            $messages += [PSCustomObject]@{
+                role    = "user"
+                content = $prompt
+            }
+
+            $params = @{
+                Uri         = "https://api.openai.com/v1/chat/completions"
+                Method      = "POST"
+                Body        = @{model = "$engine"; messages = $messages[-5..-1] } | ConvertTo-Json
+                Headers     = if ($azure) { @{"api-key" = "$api_key" } } else { @{"Authorization" = "Bearer $api_key" } }
+                ContentType = "application/json;charset=utf-8"
+            }
+
+            $response = Invoke-RestMethod @params
+            $stopwatch.Stop()
+            $result = $response.choices[0].message.content
+            $total_tokens = $response.usage.total_tokens
+            $prompt_tokens = $response.usage.prompt_tokens
+            $completion_tokens = $response.usage.completion_tokens
+
+
+            if ($PSVersionTable['PSVersion'].Major -eq 5) {
+                $dstEncoding = [System.Text.Encoding]::GetEncoding('iso-8859-1')
+                $srcEncoding = [System.Text.Encoding]::UTF8
+                $result = $srcEncoding.GetString([System.Text.Encoding]::Convert($srcEncoding, $dstEncoding, $srcEncoding.GetBytes($result)))
+            }
+
+            $messages += [PSCustomObject]@{
+                role    = "assistant"
+                content = $result
+            }
+        
+
+            Write-Host -ForegroundColor Red ("`n[$current] $($resources.response)" -f $total_tokens, $prompt_tokens, $completion_tokens )
+            Write-Host $result -ForegroundColor Green
+
+            Write-Log -message $stopwatch.ElapsedMilliseconds, $total_tokens, $prompt_tokens, $completion_tokens
+        }
     }
 
 }

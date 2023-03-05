@@ -15,4 +15,5 @@ ConvertFrom-StringData -StringData @'
     dialog_cancelbutton_text = Cancel
     update_prompt=You are using an old version of code365scripts.openai, Do you want to update it now? [Y/N]
     update_success=Update successfully, please restart your PowerShell session.
+    welcome_chatgpt = Welcome to ChatGPT {0}'s world, The model you are currently using is: {1}, Please start with your prompt.
 '@
