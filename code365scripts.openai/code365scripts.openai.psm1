@@ -16,11 +16,11 @@ Start-Job -ScriptBlock {
     if (($env:CHECK_UPDATE_CODE365SCRIPTS -eq 0) -or (Test-Path $file)) {
         return
     }
-        
-    $version = (Find-Module code365scripts.openai).Version
+    $module = Find-Module code365scripts.openai
+    $version = $module.Version
     $current = (Get-Module code365scripts.openai -ListAvailable | Sort-Object -Property Version -Descending | Select-Object -First 1).Version
     if ($version -ne $current) {
-        Set-Content $file -Value "" -Force
+        Set-Content $file -Value $module.Description -Force
     }
     else {
         if (Test-Path $file ) {
@@ -41,7 +41,9 @@ function Test-Update() {
         return
     };
 
-    $confirm = Read-Host $resources.update_prompt
+    $description = Get-Content "$script:folder\update.txt"
+
+    $confirm = Read-Host ($resources.update_prompt -f $description)
     if ($confirm -eq "y") {
         if ($PSVersionTable['PSVersion'].Major -eq 5) {
             Update-Module code365scripts.openai -Force
