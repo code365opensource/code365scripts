@@ -12,7 +12,7 @@
     RootModule           = '.\code365scripts.openai.psm1'
 
     # Version number of this module.
-    ModuleVersion        = '1.0.4.7'
+    ModuleVersion        = '1.0.4.8'
 
     # Supported PSEditions
     CompatiblePSEditions = @("Desktop")
@@ -21,7 +21,7 @@
     GUID                 = '4948e170-d2aa-4f97-9cb2-fd0f0843e473'
 
     # Author of this module
-    Author               = 'chenxizhang（code365)'
+    Author               = 'chenxizhang'
 
     # Company or vendor of this module
     CompanyName          = 'Code365'
@@ -30,7 +30,7 @@
     Copyright            = '(c) code365.xyz. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description          = 'The open source powershell module built by code365.xyz'
+    Description          = 'The non-official OpenAI PowerShell module. This module is used to interact with OpenAI API.`n1.0.4.8 Added error handling.'
 
     # Minimum version of the PowerShell engine required by this module
     PowerShellVersion    = '5.1'
@@ -101,7 +101,7 @@
             LicenseUri = 'https://github.com/code365opensource/code365scripts'
 
             # A URL to the main website for this project.
-            ProjectUri = 'https://github.com/code365opensource/code365scripts'
+            ProjectUri = 'https://github.com/code365opensource/code365scripts/tree/master/code365scripts.openai'
 
             # A URL to an icon representing this module.
             # IconUri = ''

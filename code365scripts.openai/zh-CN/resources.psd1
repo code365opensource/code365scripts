@@ -13,7 +13,7 @@ ConvertFrom-StringData -StringData @'
     file_prompt = 请选择一个文件
     dialog_okbutton_text = 确定
     dialog_cancelbutton_text = 取消
-    update_prompt=我们检测到了新版本，推荐你立即更新，是否同意? [Y/N]
+    update_prompt=我们检测到了新版本，`n`n{0}`n`n推荐你立即更新，是否同意? [Y/N]
     update_success=更新已完成，你需要重新执行命令.
     welcome_chatgpt =欢迎来到 ChatGPT{0}的世界, 当前使用的模型是: {1}, 请开始对话吧.
 '@
