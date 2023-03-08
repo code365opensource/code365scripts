@@ -12,7 +12,7 @@
     RootModule           = '.\code365scripts.openai.psm1'
 
     # Version number of this module.
-    ModuleVersion        = '1.0.4.8'
+    ModuleVersion        = '1.0.4.9'
 
     # Supported PSEditions
     CompatiblePSEditions = @("Desktop")
@@ -30,7 +30,12 @@
     Copyright            = '(c) code365.xyz. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description          = 'The non-official OpenAI PowerShell module. This module is used to interact with OpenAI API.`n1.0.4.8 Added error handling.'
+    Description          = 'The non-official OpenAI PowerShell module. This module is used to interact with OpenAI API.
+    
+    Changelogs:
+
+    - 2023-03-09    v1.0.4.9    Added change logs in the description.
+    - 2023-03-08    v1.0.4.8    Added error handling.'
 
     # Minimum version of the PowerShell engine required by this module
     PowerShellVersion    = '5.1'
