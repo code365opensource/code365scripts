@@ -131,25 +131,30 @@ function New-OpenAICompletion {
             ContentType = "application/json;charset=utf-8"
         }
         $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-        $response = Invoke-RestMethod @params
-        $stopwatch.Stop()
-        $total_tokens = $response.usage.total_tokens
-        $prompt_tokens = $response.usage.prompt_tokens
-        $completion_tokens = $response.usage.completion_tokens
 
-        if ($PSVersionTable['PSVersion'].Major -eq 5) {
-            $dstEncoding = [System.Text.Encoding]::GetEncoding('iso-8859-1')
-            $srcEncoding = [System.Text.Encoding]::UTF8
+        try {
+            $response = Invoke-RestMethod @params
+            $stopwatch.Stop()
+            $total_tokens = $response.usage.total_tokens
+            $prompt_tokens = $response.usage.prompt_tokens
+            $completion_tokens = $response.usage.completion_tokens
 
-            $response.choices | ForEach-Object {
-                $_.text = $srcEncoding.GetString([System.Text.Encoding]::Convert($srcEncoding, $dstEncoding, $srcEncoding.GetBytes($_.text)))
+            if ($PSVersionTable['PSVersion'].Major -eq 5) {
+                $dstEncoding = [System.Text.Encoding]::GetEncoding('iso-8859-1')
+                $srcEncoding = [System.Text.Encoding]::UTF8
+
+                $response.choices | ForEach-Object {
+                    $_.text = $srcEncoding.GetString([System.Text.Encoding]::Convert($srcEncoding, $dstEncoding, $srcEncoding.GetBytes($_.text)))
+                }
             }
-        }
         
-
-        Write-Log -message $stopwatch.ElapsedMilliseconds, $total_tokens, $prompt_tokens, $completion_tokens
-        Write-Output $response
-
+            Write-Log -message $stopwatch.ElapsedMilliseconds, $total_tokens, $prompt_tokens, $completion_tokens
+            Write-Output $response
+            
+        }
+        catch {
+            Write-Host ($_.ErrorDetails | ConvertFrom-Json).error.message -ForegroundColor Red
+        }
     }
 
 }
@@ -261,25 +266,29 @@ function New-OpenAIConversation {
                 ContentType = "application/json;charset=utf-8"
             }
 
-            $response = Invoke-RestMethod @params
-            $stopwatch.Stop()
-            $result = $response.choices[0].text
-            $total_tokens = $response.usage.total_tokens
-            $prompt_tokens = $response.usage.prompt_tokens
-            $completion_tokens = $response.usage.completion_tokens
-
-
-            if ($PSVersionTable['PSVersion'].Major -eq 5) {
-                $dstEncoding = [System.Text.Encoding]::GetEncoding('iso-8859-1')
-                $srcEncoding = [System.Text.Encoding]::UTF8
-                $result = $srcEncoding.GetString([System.Text.Encoding]::Convert($srcEncoding, $dstEncoding, $srcEncoding.GetBytes($result)))
-            }
+            try {
+                $response = Invoke-RestMethod @params
+                $stopwatch.Stop()
+                $result = $response.choices[0].text
+                $total_tokens = $response.usage.total_tokens
+                $prompt_tokens = $response.usage.prompt_tokens
+                $completion_tokens = $response.usage.completion_tokens
+                if ($PSVersionTable['PSVersion'].Major -eq 5) {
+                    $dstEncoding = [System.Text.Encoding]::GetEncoding('iso-8859-1')
+                    $srcEncoding = [System.Text.Encoding]::UTF8
+                    $result = $srcEncoding.GetString([System.Text.Encoding]::Convert($srcEncoding, $dstEncoding, $srcEncoding.GetBytes($result)))
+                }
         
+                Write-Host -ForegroundColor Red ("`n[$current] $($resources.response)" -f $total_tokens, $prompt_tokens, $completion_tokens )
+                Write-Host $result -ForegroundColor Green
 
-            Write-Host -ForegroundColor Red ("`n[$current] $($resources.response)" -f $total_tokens, $prompt_tokens, $completion_tokens )
-            Write-Host $result -ForegroundColor Green
+                Write-Log -message $stopwatch.ElapsedMilliseconds, $total_tokens, $prompt_tokens, $completion_tokens
+            }
+            catch {
+                <#Do this if a terminating exception happens#>
+                Write-Host ($_.ErrorDetails | ConvertFrom-Json).error.message -ForegroundColor Red
+            }
 
-            Write-Log -message $stopwatch.ElapsedMilliseconds, $total_tokens, $prompt_tokens, $completion_tokens
         }
 
     }
@@ -371,30 +380,35 @@ function New-ChatGPTConversation {
                 ContentType = "application/json;charset=utf-8"
             }
 
-            $response = Invoke-RestMethod @params
-            $stopwatch.Stop()
-            $result = $response.choices[0].message.content
-            $total_tokens = $response.usage.total_tokens
-            $prompt_tokens = $response.usage.prompt_tokens
-            $completion_tokens = $response.usage.completion_tokens
+            try {
+                $response = Invoke-RestMethod @params
+                $stopwatch.Stop()
+                $result = $response.choices[0].message.content
+                $total_tokens = $response.usage.total_tokens
+                $prompt_tokens = $response.usage.prompt_tokens
+                $completion_tokens = $response.usage.completion_tokens
 
 
-            if ($PSVersionTable['PSVersion'].Major -eq 5) {
-                $dstEncoding = [System.Text.Encoding]::GetEncoding('iso-8859-1')
-                $srcEncoding = [System.Text.Encoding]::UTF8
-                $result = $srcEncoding.GetString([System.Text.Encoding]::Convert($srcEncoding, $dstEncoding, $srcEncoding.GetBytes($result)))
-            }
+                if ($PSVersionTable['PSVersion'].Major -eq 5) {
+                    $dstEncoding = [System.Text.Encoding]::GetEncoding('iso-8859-1')
+                    $srcEncoding = [System.Text.Encoding]::UTF8
+                    $result = $srcEncoding.GetString([System.Text.Encoding]::Convert($srcEncoding, $dstEncoding, $srcEncoding.GetBytes($result)))
+                }
 
-            $messages += [PSCustomObject]@{
-                role    = "assistant"
-                content = $result
-            }
+                $messages += [PSCustomObject]@{
+                    role    = "assistant"
+                    content = $result
+                }
         
 
-            Write-Host -ForegroundColor Red ("`n[$current] $($resources.response)" -f $total_tokens, $prompt_tokens, $completion_tokens )
-            Write-Host $result -ForegroundColor Green
+                Write-Host -ForegroundColor Red ("`n[$current] $($resources.response)" -f $total_tokens, $prompt_tokens, $completion_tokens )
+                Write-Host $result -ForegroundColor Green
 
-            Write-Log -message $stopwatch.ElapsedMilliseconds, $total_tokens, $prompt_tokens, $completion_tokens
+                Write-Log -message $stopwatch.ElapsedMilliseconds, $total_tokens, $prompt_tokens, $completion_tokens
+            }
+            catch {
+                Write-Host ($_.ErrorDetails | ConvertFrom-Json).error.message -ForegroundColor Red
+            }
         }
     }
 
