@@ -332,14 +332,26 @@ function New-ChatGPTConversation {
     [CmdletBinding()]
     [Alias("chatgpt")][Alias("chat")]
     param(
-        [Parameter()][string]$api_key = $env:OPENAI_API_KEY,
-        [Parameter()][string]$engine = "gpt-3.5-turbo",
+        [Parameter()][string]$api_key,
+        [Parameter()][string]$engine,
+        [string]$endpoint, # 这是openai的服务基地址，如果不指定，则使用默认地址
         [switch]$azure,
-        [string]$system = "你是一个ChatGPT聊天机器人,你回答一些常规问题，请根据用户的语言回答。"
+        [string]$system = "你是一个ChatGPT聊天机器人,请根据用户的语言回答。"
     )
     BEGIN {
 
         Test-Update # 检查更新
+
+        if ($azure) {
+            $api_key = if ($api_key) { $api_key } else { if ($env:OPENAI_API_KEY_Azure) { $env:OPENAI_API_KEY_Azure } else { $env:OPENAI_API_KEY } }
+            $engine = if ($engine) { $engine } else { if ($env:OPENAI_CHAT_ENGINE_Azure) { $env:OPENAI_CHAT_ENGINE_Azure }else { "gpt-3.5-turbo" } }
+            $endpoint = if ($endpoint) { $endpoint } else { "{0}openai/deployments/$engine/chat/completions?api-version=2023-03-15-preview" -f $env:OPENAI_ENDPOINT_AZURE }
+        }
+        else {
+            $api_key = if ($api_key) { $api_key } else { $env:OPENAI_API_KEY }
+            $engine = if ($engine) { $engine } else { if ($env:OPENAI_CHAT_ENGINE) { $env:OPENAI_CHAT_ENGINE }else { "gpt-3.5-turbo" } }
+            $endpoint = if ($endpoint) { $endpoint } else { "https://api.openai.com/v1/chat/completions" }
+        }
 
         $hasError = $false
 
@@ -374,7 +386,7 @@ function New-ChatGPTConversation {
         Write-Host $welcome -ForegroundColor Yellow
 
         $messages = @()
-        $system = @(
+        $systemPrompt = @(
             [PSCustomObject]@{
                 role    = "system"
                 content = $system
@@ -422,9 +434,9 @@ function New-ChatGPTConversation {
             }
 
             $params = @{
-                Uri         = "https://api.openai.com/v1/chat/completions"
+                Uri         = $endpoint
                 Method      = "POST"
-                Body        = @{model = "$engine"; messages = ($system + $messages[-5..-1]) } | ConvertTo-Json
+                Body        = @{model = "$engine"; messages = ($systemPrompt + $messages[-5..-1]) } | ConvertTo-Json
                 Headers     = if ($azure) { @{"api-key" = "$api_key" } } else { @{"Authorization" = "Bearer $api_key" } }
                 ContentType = "application/json;charset=utf-8"
             }
@@ -456,7 +468,7 @@ function New-ChatGPTConversation {
                 Write-Log -message $stopwatch.ElapsedMilliseconds, $total_tokens, $prompt_tokens, $completion_tokens
             }
             catch {
-                Write-Host ($_.ErrorDetails | ConvertFrom-Json).error.message -ForegroundColor Red
+                Write-Host $_.ErrorDetails -ForegroundColor Red
             }
         }
     }
