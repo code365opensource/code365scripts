@@ -105,25 +105,33 @@ SETX OPENAI_ENDPOINT_AZURE "你的服务地址"
 
 1. New-ChatGPTConversation (别名 chatgpt 或 chat）
     
-    这个函数可以建立一个基于ChatGPT的聊天机器人界面，以便你可以一直输入内容，并且得到答复。请注意，默认是单行输入，但通过输入 m 回车后即可多行输入，而 输入 f 回车后可以选择磁盘上的整个文件作为输入。这个函数跟 New-OpenAICoversation 的最大区别就在于，它调用的是真正的ChatGPT的模型（默认就是gpt-3.5-turbo），而且它是有上下文理解能力的。当前我实现的版本，默认会把最近的5个消息历史作为上下文。
+    这个函数可以建立一个基于ChatGPT的聊天机器人界面，以便你可以一直输入内容，并且得到答复。请注意，默认是单行输入，但通过输入 m 回车后即可多行输入，而 输入 f 回车后可以选择磁盘上的整个文件作为输入。这个函数跟 New-OpenAICoversation 的最大区别就在于，它调用的是真正的ChatGPT的模型（默认就是gpt-3.5-turbo, 你也可以修改为gpt-4 或者其他模型名称），而且它是有上下文理解能力的。当前我实现的版本，默认会把最近的5个消息历史作为上下文。
     
     ![image](https://user-images.githubusercontent.com/1996954/222958989-b5ebfa89-7473-4946-a32c-470b9e2b7926.png)
 
          
     它有如下的参数，并且所有参数都是可选的。
-    New-ChatGPTConversation [[-api_key] <string>] [[-engine] <string>] [-azure]      
+    New-ChatGPTConversation [[-api_key] <string>] [[-engine] <string>] [[-endpoint] <string>] [[-system] <string>] [-azure] [<CommonParameters>]
     
+    请注意：
+    - 如果使用OpenAI原生服务，如果不指定， api_key将读取 OPENAI_API_KEY这个环境变量，engine 将读取OPENAI_CHAT_ENGINE这个变量（如果没有，则使用 gpt-3.5-turbo）
+    - 如果指定了 azure参数，则尝试使用Azure OpenAI Service，如果不指定， api_key 将读取 OPENAI_API_KEY_Azure这个环境变量，engine 将读取 OPENAI_CHAT_ENGINE_Azure这个变量 （如果没有设置，则使用 gpt-3.5-turbo)
           
     用法：
         
-          # 使用ChatGPT原生服务启动对话机器人
+          # 使用ChatGPT原生服务启动对话机器人，所有参数都使用默认值，
           chatgpt
           
-          # 使用Azure ChatGPT 服务启动对话机器人 【目前其实并不支持，但我先设置好了这个参数】
+          # 使用Azure ChatGPT 服务启动对话机器人。 
           chatgpt -azure
+         
+          # 指定系统提示（system prompt)，以便给机器人进行角色扮演
+          chatgpt -azure -system "你是一个英语专家，我给你中文的话，你给我翻译成英文八级水平，如果我给你英文，你就进行润色一下"
           
-          # 当然其他函数都是可以指定的，而且都是对应了ChatGPT 接口定义。
+
+
           
+   
 1. Get-OpenAILogs
 
     这个函数用来显示日志信息。这个模块每天会产生一个日志文件，里面记录了时间，调用时长（毫秒），总的tokens，输入文本占用的tokens，返回值占用的tokens。
