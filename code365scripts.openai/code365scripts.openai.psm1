@@ -60,6 +60,17 @@ function Test-Update() {
 
 }
 
+# 检查 openai.com 是否可以访问，使用iwr 的 HEAD 方法测试，如果返回 200 则可以访问
+function Test-OpenAIConnectivity {
+    # 设置全局错误处理
+    $ErrorActionPreference = 'SilentlyContinue'
+    # 增加超时时间 5秒 
+    $response = Invoke-WebRequest -Uri "https://api.openai.com/v1/models" -Method Head -TimeoutSec 5
+    # 恢复全局错误处理
+    $ErrorActionPreference = 'Continue'
+    return $response.StatusCode -eq 200
+}
+
 
 function New-OpenAICompletion {
     <#
@@ -94,8 +105,18 @@ function New-OpenAICompletion {
             $endpoint = if ($endpoint) { $endpoint } else { if ($env:OPENAI_ENDPOINT) { $env:OPENAI_ENDPOINT }else { "https://api.openai.com/v1/completions" } }
         }
 
+        
 
         $hasError = $false
+
+        $live = Test-OpenAIConnectivity
+
+        # 如果不是azure，并且 openai.com 无法访问，则报错
+        if ((!$azure) -and ($live -eq $False)) {
+            Write-Host $resources.openai_unavaliable -ForegroundColor Red
+            $hasError = $true
+        }
+
 
         if (!$api_key) {
             Write-Host $resources.error_missing_api_key -ForegroundColor Red
@@ -182,6 +203,8 @@ function New-OpenAIConversation {
 
         Test-Update # 检查更新
 
+
+
         if ($azure) {
             $api_key = if ($api_key) { $api_key } else { if ($env:OPENAI_API_KEY_Azure) { $env:OPENAI_API_KEY_Azure } else { $env:OPENAI_API_KEY } }
             $engine = if ($engine) { $engine } else { $env:OPENAI_ENGINE_Azure }
@@ -191,10 +214,18 @@ function New-OpenAIConversation {
             $api_key = if ($api_key) { $api_key } else { $env:OPENAI_API_KEY }
             $engine = if ($engine) { $engine } else { if ($env:OPENAI_ENGINE) { $env:OPENAI_ENGINE }else { "text-davinci-003" } }
             $endpoint = if ($endpoint) { $endpoint } else { if ($env:OPENAI_ENDPOINT) { $env:OPENAI_ENDPOINT }else { "https://api.openai.com/v1/completions" } }
+
         }
 
-
         $hasError = $false
+
+        $live = Test-OpenAIConnectivity
+
+        # 如果不是azure，并且 openai.com 无法访问，则报错
+        if ((!$azure) -and ($live -eq $False)) {
+            Write-Host $resources.openai_unavaliable -ForegroundColor Red
+            $hasError = $true
+        }
 
         if (!$api_key) {
             Write-Host $resources.error_missing_api_key -ForegroundColor Red
@@ -310,6 +341,15 @@ function New-ChatGPTConversation {
         Test-Update # 检查更新
 
         $hasError = $false
+
+        $live = Test-OpenAIConnectivity
+
+        # 如果不是azure，并且 openai.com 无法访问，则报错
+        if ((!$azure) -and ($live -eq $False)) {
+            Write-Host $resources.openai_unavaliable -ForegroundColor Red
+            $hasError = $true
+        }
+
 
         if (!$api_key) {
             Write-Host $resources.error_missing_api_key -ForegroundColor Red
