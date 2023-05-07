@@ -334,7 +334,8 @@ function New-ChatGPTConversation {
     param(
         [Parameter()][string]$api_key = $env:OPENAI_API_KEY,
         [Parameter()][string]$engine = "gpt-3.5-turbo",
-        [switch]$azure
+        [switch]$azure,
+        [string]$system = "你是一个ChatGPT聊天机器人,你回答一些常规问题，请根据用户的语言回答。"
     )
     BEGIN {
 
@@ -373,6 +374,12 @@ function New-ChatGPTConversation {
         Write-Host $welcome -ForegroundColor Yellow
 
         $messages = @()
+        $system = @(
+            [PSCustomObject]@{
+                role    = "system"
+                content = $system
+            }
+        )
         
         while ($true) {
             $current = $index++
@@ -417,7 +424,7 @@ function New-ChatGPTConversation {
             $params = @{
                 Uri         = "https://api.openai.com/v1/chat/completions"
                 Method      = "POST"
-                Body        = @{model = "$engine"; messages = $messages[-5..-1] } | ConvertTo-Json
+                Body        = @{model = "$engine"; messages = ($system + $messages[-5..-1]) } | ConvertTo-Json
                 Headers     = if ($azure) { @{"api-key" = "$api_key" } } else { @{"Authorization" = "Bearer $api_key" } }
                 ContentType = "application/json;charset=utf-8"
             }
