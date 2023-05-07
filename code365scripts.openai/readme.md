@@ -114,8 +114,8 @@ SETX OPENAI_ENDPOINT_AZURE "你的服务地址"
     New-ChatGPTConversation [[-api_key] <string>] [[-engine] <string>] [[-endpoint] <string>] [[-system] <string>] [-azure] [<CommonParameters>]
     
     请注意：
-    - 如果使用OpenAI原生服务，如果不指定， api_key将读取 OPENAI_API_KEY这个环境变量，engine 将读取OPENAI_CHAT_ENGINE这个变量（如果没有，则使用 gpt-3.5-turbo）
-    - 如果指定了 azure参数，则尝试使用Azure OpenAI Service，如果不指定， api_key 将读取 OPENAI_API_KEY_Azure这个环境变量，engine 将读取 OPENAI_CHAT_ENGINE_Azure这个变量 （如果没有设置，则使用 gpt-3.5-turbo)
+    - 如果使用OpenAI原生服务，如果不指定， api_key将读取 OPENAI_API_KEY这个环境变量，engine 将读取OPENAI_CHAT_ENGINE这个环境变量（如果没有，则使用 gpt-3.5-turbo）,endpoint 可以不输入，将使用OpenAI默认的地址。
+    - 如果指定了 azure参数，则尝试使用Azure OpenAI Service，如果不指定， api_key 将读取 OPENAI_API_KEY_Azure这个环境变量，engine 将读取 OPENAI_CHAT_ENGINE_Azure这个变量 （如果没有设置，则使用 gpt-3.5-turbo)，endpoint 则默认读取 OPENAI_ENDPOINT_Azure 这个环境变量的值。
           
     用法：
         
