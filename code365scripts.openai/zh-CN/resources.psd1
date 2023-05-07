@@ -16,4 +16,5 @@ ConvertFrom-StringData -StringData @'
     update_prompt=我们检测到了新版本，`n`n{0}`n`n推荐你立即更新，是否同意? [Y/N]
     update_success=更新已完成，你需要重新执行命令.
     welcome_chatgpt =欢迎来到 ChatGPT{0}的世界, 当前使用的模型是: {1}, 请开始对话吧.
+    openai_unavaliable = 当前OpenAI服务无法访问，请检查网络链接.
 '@

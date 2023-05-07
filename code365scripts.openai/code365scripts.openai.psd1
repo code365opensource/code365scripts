@@ -12,7 +12,7 @@
     RootModule           = '.\code365scripts.openai.psm1'
 
     # Version number of this module.
-    ModuleVersion        = '1.0.4.9'
+    ModuleVersion        = '1.0.4.10'
 
     # Supported PSEditions
     CompatiblePSEditions = @("Desktop")
@@ -34,6 +34,7 @@
     
     Changelogs:
 
+    - 2023-05-07    v1.0.4.10    Added network connectivity test logic
     - 2023-03-09    v1.0.4.9    Added change logs in the description.
     - 2023-03-08    v1.0.4.8    Added error handling.'
 
