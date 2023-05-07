@@ -65,7 +65,7 @@ function Test-OpenAIConnectivity {
     # 设置全局错误处理
     $ErrorActionPreference = 'SilentlyContinue'
     # 增加超时时间 5秒 
-    $response = Invoke-WebRequest -Uri "https://api.openai.com/v1/models" -Method Head -TimeoutSec 5
+    $response = Invoke-WebRequest -Uri "https://platform.openai.com/docs/" -Method Head -TimeoutSec 5
     # 恢复全局错误处理
     $ErrorActionPreference = 'Continue'
     return $response.StatusCode -eq 200
