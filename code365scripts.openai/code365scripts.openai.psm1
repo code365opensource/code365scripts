@@ -109,10 +109,8 @@ function New-OpenAICompletion {
 
         $hasError = $false
 
-        $live = Test-OpenAIConnectivity
-
         # 如果不是azure，并且 openai.com 无法访问，则报错
-        if ((!$azure) -and ($live -eq $False)) {
+        if ((!$azure) -and ((Test-OpenAIConnectivity) -eq $False)) {
             Write-Host $resources.openai_unavaliable -ForegroundColor Red
             $hasError = $true
         }
@@ -219,10 +217,7 @@ function New-OpenAIConversation {
 
         $hasError = $false
 
-        $live = Test-OpenAIConnectivity
-
-        # 如果不是azure，并且 openai.com 无法访问，则报错
-        if ((!$azure) -and ($live -eq $False)) {
+        if ((!$azure) -and ((Test-OpenAIConnectivity) -eq $False)) {
             Write-Host $resources.openai_unavaliable -ForegroundColor Red
             $hasError = $true
         }
@@ -355,10 +350,7 @@ function New-ChatGPTConversation {
 
         $hasError = $false
 
-        $live = Test-OpenAIConnectivity
-
-        # 如果不是azure，并且 openai.com 无法访问，则报错
-        if ((!$azure) -and ($live -eq $False)) {
+        if ((!$azure) -and ((Test-OpenAIConnectivity) -eq $False)) {
             Write-Host $resources.openai_unavaliable -ForegroundColor Red
             $hasError = $true
         }
