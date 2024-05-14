@@ -207,6 +207,4 @@ function Set-OfficeDefaultFont {
     Set-Location "HKCU:"
     Set-ItemProperty -Path "HKEY_CURRENT_USER\software\microsoft\office\16.0\excel\options" -Name "font" -Value "Microsoft YaHei UI,11" -Type String
     set-location $location
-
-    
 }

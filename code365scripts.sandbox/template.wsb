@@ -1,0 +1,12 @@
+<Configuration>
+<MappedFolders>
+  <MappedFolder>
+    <HostFolder>{{downloadfolder}}</HostFolder>
+    <SandboxFolder>C:\Users\WDAGUtilityAccount\Downloads</SandboxFolder>
+    <ReadOnly>false</ReadOnly>
+  </MappedFolder>
+</MappedFolders>
+<LogonCommand>
+  <Command>powershell.exe -ExecutionPolicy Bypass -File C:\Users\WDAGUtilityAccount\Downloads\sandbox.ps1</Command>
+</LogonCommand>
+</Configuration>
