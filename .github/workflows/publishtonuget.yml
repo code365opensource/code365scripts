@@ -40,8 +40,8 @@ jobs:
               - 'code365scripts.teams/*.psd1'
             weixin:
               - 'code365scripts.weixin/*.psd1'
-            openai:
-              - 'code365scripts.openai/*.psd1'
+            sandbox:
+              - 'code365scripts.sandbox/*.psd1'
 
       - if: steps.changes.outputs.main == 'true'
         name: Code signing (main)
@@ -117,4 +117,23 @@ jobs:
         id: publish-weixin
         with:
           modulePath: code365scripts.weixin
+          NuGetApiKey: ${{ secrets.NUGETKEY }}
+
+      - if: steps.changes.outputs.sandbox == 'true'
+        name: Code signing (sandbox)
+        uses: dlemstra/code-sign-action@v1
+        with:
+          certificate: '${{ secrets.CERTIFICATE }}'
+          password: '${{ secrets.CERTIFICATE_PASSWORD }}'
+          folder: 'code365scripts.sandbox'
+          recursive: true
+          files: |
+            *.ps1
+
+      - name: Publish Module to PowerShell Gallery (weixin)
+        if: steps.changes.outputs.sandbox == 'true'
+        uses: chenxizhang/publish-powershell-module-action@v35
+        id: publish-sandbox
+        with:
+          modulePath: code365scripts.sandbox
           NuGetApiKey: ${{ secrets.NUGETKEY }}
