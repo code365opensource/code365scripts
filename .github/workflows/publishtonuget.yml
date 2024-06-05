@@ -77,7 +77,7 @@ jobs:
           modulePath: code365scripts.weixin
           NuGetApiKey: ${{ secrets.NUGETKEY }}
 
-      - name: Publish Module to PowerShell Gallery (weixin)
+      - name: Publish Module to PowerShell Gallery (sandbox)
         if: steps.changes.outputs.sandbox == 'true'
         uses: chenxizhang/publish-powershell-module-action@v35
         id: publish-sandbox
